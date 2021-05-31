@@ -21,6 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.joe.podcastplayer.base.BaseViewModel
 import com.prof.rssparser.Channel
 import com.prof.rssparser.Parser
 import kotlinx.coroutines.Dispatchers
@@ -28,10 +29,16 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class MainViewModel : ViewModel() {
+class HomeViewModel : BaseViewModel() {
 
     private val url = "https://feeds.soundcloud.com/users/soundcloud:users:322164009/sounds.rss"
     private lateinit var articleListLive: MutableLiveData<Channel>
+    private var parser: Parser = Parser.Builder()
+        .context(PodcastPlayerApplication.application)
+        // If you want to provide a custom charset (the default is utf-8):
+        // .charset(Charset.forName("ISO-8859-7"))
+        .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
+        .build()
 
     private val _snackbar = MutableLiveData<String>()
     val snackbar: LiveData<String>
@@ -49,7 +56,7 @@ class MainViewModel : ViewModel() {
         _snackbar.value = null
     }
 
-    fun fetchFeed(parser: Parser) {
+    fun fetchFeed() {
         viewModelScope.launch {
             try {
                 val channel = parser.getChannel(url)
