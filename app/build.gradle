@@ -91,4 +91,6 @@ dependencies {
 //    kapt 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
 
     implementation 'com.google.code.gson:gson:2.8.7'
+
+    implementation "org.apache.commons:commons-lang3:${versions.commonslangVersion}"
 }

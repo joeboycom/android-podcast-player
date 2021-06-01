@@ -17,13 +17,31 @@
 
 package com.joe.podcastplayer
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.prof.rssparser.Article
 
-class ArticleAdapter(val articles: MutableList<Article>) : RecyclerView.Adapter<EpisodeItemViewHolder>() {
+class ArticleAdapter : RecyclerView.Adapter<EpisodeItemViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = EpisodeItemViewHolder.newInstance(parent)
-    override fun getItemCount() = articles.size
-    override fun onBindViewHolder(holderEpisode: EpisodeItemViewHolder, position: Int) = holderEpisode.bind(articles[position])
+    private var onClickListener: ((article: Article) -> Unit)? = null
+    var articles: ArrayList<Article>? = null
+        set(value) {
+            field = value
+        }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = EpisodeItemViewHolder.newInstance(parent).apply {
+        setOnClickListener {
+            this@ArticleAdapter.onClickListener?.invoke(it)
+        }
+    }
+    override fun getItemCount() = articles?.size ?: 0
+    override fun onBindViewHolder(holderEpisode: EpisodeItemViewHolder, position: Int) {
+        if (articles.isNullOrEmpty()) return
+        holderEpisode.bind(articles!![position])
+    }
+
+    fun setOnClickListener(listener: ((article: Article) -> Unit)?) {
+        onClickListener = listener
+    }
 }

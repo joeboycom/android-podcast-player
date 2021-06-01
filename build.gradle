@@ -32,7 +32,8 @@ buildscript {
             'mockitoKotlin'      : '2.2.0',
             'mockitoInline'      : '3.9.0',
             'robolectric'        : '4.5.1',
-            'mockitoCore'        : '3.7.7'
+            'mockitoCore'        : '3.7.7',
+            'commonslangVersion' : '3.6'
     ]
 
     ext.kotlin_version = "1.5.0"

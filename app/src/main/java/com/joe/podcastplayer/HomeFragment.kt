@@ -1,11 +1,7 @@
 package com.joe.podcastplayer
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.net.NetworkInfo
-import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.base.BaseFragment
@@ -58,6 +54,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
     override fun init() {
         viewModel = ViewModelProvider(baseActivity!!, viewModelFactory).get(HomeViewModel::class.java)
+        adapter = ArticleAdapter()
     }
 
     override fun initLayout() {
@@ -75,7 +72,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         viewBinding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark)
         viewBinding.swipeRefresh.canChildScrollUp()
         viewBinding.swipeRefresh.setOnRefreshListener {
-            adapter.articles.clear()
+            adapter.articles?.clear()
             adapter.notifyDataSetChanged()
             viewBinding.swipeRefresh.isRefreshing = true
             viewModel.fetchFeed()
@@ -99,19 +96,10 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     }
 
     override fun initAction() {
-//        adapter!!.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-//            override fun onChanged() = updateArea()
-//            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = updateArea()
-//            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = updateArea()
-//        })
-
-//        viewBinding.swipeRefreshLayout.setOnRefreshListener {
-//            analyticsCenter.sendEvent(screenName, "swipe_to_refresh")
-//            handler.postDelayed(1000L) {
-//                viewModel.refresh()
-//                viewBinding.swipeRefreshLayout.isRefreshing = false
-//            }
-//        }
+        adapter.setOnClickListener {
+            val fragment = EpisodeFragment.newInstance(title, it.title, it.image, it.description)
+            (activity as MainActivity?)?.showFragment(fragment, TransitionEffect.SLIDE)
+        }
     }
 
     override fun initObserver() {
@@ -126,27 +114,10 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         }
 
         imageLoader.load(channel.image?.url, viewBinding.headerImageView)
-        adapter = ArticleAdapter(channel.articles)
+        adapter.articles = channel.articles
         viewBinding.recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
         viewBinding.progLoading.setVisibility(false)
         viewBinding.swipeRefresh.isRefreshing = false
-    }
-
-    @Suppress("DEPRECATION")
-    fun isOnline(): Boolean {
-        val connectivityManager = baseActivity!!.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = connectivityManager.activeNetwork ?: return false
-            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
-            return when {
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
-                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
-                else -> false
-            }
-        } else {
-            val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
-            return activeNetworkInfo != null && activeNetworkInfo.isConnected
-        }
     }
 }

@@ -41,7 +41,7 @@ internal object CoreXMLParser {
         var channelImage: Image? = Image()
         var channelLastBuildDate: String? = null
         var channelUpdatePeriod: String? = null
-        val articleList = mutableListOf<Article>()
+        val articleList = ArrayList<Article>()
         var currentArticle = Article()
         // This image url is extracted from the content and the description of the rss item.
         // It's a fallback just in case there aren't any images in the enclosure tag.
