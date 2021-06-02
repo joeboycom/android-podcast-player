@@ -108,7 +108,7 @@ class Parser private constructor(private var okHttpClient: OkHttpClient? = null,
      * This method provides back-support for Java code.
      *
      * When the parsing it's successfully completed, the [OnTaskCompleted.onTaskCompleted] callback
-     * is called with the parsed [Channel] as parameter.
+     * is called with the parsed [Feed] as parameter.
      *
      * When there is an error on the parsing, the [OnTaskCompleted.onError] callback is called
      * with the [Exception] as parameter.
@@ -163,18 +163,18 @@ class Parser private constructor(private var okHttpClient: OkHttpClient? = null,
     }
 
     /**
-     * Returns a parsed RSS [Channel].
+     * Returns a parsed RSS [Feed].
      *
      * If the context and the cacheExpirationMillis has been provided with the [Builder.context]
      * and the [Builder.cacheExpirationMillis], the caching support is enabled. Before making a network
-     * request, the method checks if there is a valid cached [Channel].
+     * request, the method checks if there is a valid cached [Feed].
      *
      * @exception Exception if something goes wrong during the fetching or in the parsing of the RSS feed.
      * @param url The url of the RSS feed
      *
      */
     @Throws(Exception::class)
-    suspend fun getChannel(url: String): Channel = withContext(coroutineContext) {
+    suspend fun getChannel(url: String): Feed = withContext(coroutineContext) {
         val cachedFeed = cacheManager?.getCachedFeed(url)
         if (cachedFeed != null) {
             Log.d(TAG, "Returning object from cache")
@@ -189,16 +189,16 @@ class Parser private constructor(private var okHttpClient: OkHttpClient? = null,
     }
 
     /**
-     * Parses the [rawRssFeed] into a [Channel].
+     * Parses the [rawRssFeed] into a [Feed].
      *
      * @exception Exception if something goes wrong during the parsing of the RSS feed.
      * @param rawRssFeed The Raw data of the Rss Feed.
      */
     @Throws(Exception::class)
-    suspend fun parse(rawRssFeed: String): Channel = CoroutineEngine.parseXML(rawRssFeed)
+    suspend fun parse(rawRssFeed: String): Feed = CoroutineEngine.parseXML(rawRssFeed)
 
     /**
-     * Parses the [rawRssFeed] into a [Channel] and notifies the [listener].
+     * Parses the [rawRssFeed] into a [Feed] and notifies the [listener].
      *
      * If the operation is successful, then [OnTaskCompleted.onTaskCompleted] is called with
      * the parsed channel. Otherwise, [OnTaskCompleted.onError]  is called.

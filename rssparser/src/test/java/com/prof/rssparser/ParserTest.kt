@@ -118,7 +118,7 @@ class ParserTest {
                 .build()
 
         parser.executorService = SameThreadExecutorService()
-        val argumentCaptor = argumentCaptor<Channel>()
+        val argumentCaptor = argumentCaptor<Feed>()
 
         val onTaskCompleted = mock<OnTaskCompleted>()
         parser.onFinish(onTaskCompleted)

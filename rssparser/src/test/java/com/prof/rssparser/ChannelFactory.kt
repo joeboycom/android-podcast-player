@@ -38,9 +38,9 @@ object ChannelFactory {
 
     fun getLink(): String = "https://www.androidauthority.com/feed"
 
-    fun getChannel(): Channel {
+    fun getChannel(): Feed {
         val articles = mutableListOf(
-                Article(
+                FeedItem(
                         guid = "https://www.androidauthority.com/?p=986823",
                         title = "Japan’s plans for 5G include 10 billion 14-digit phone numbers",
                         author = "Williams Pelegrin",
@@ -66,7 +66,7 @@ object ChannelFactory {
                         sourceUrl = null,
                         _categories = mutableListOf("News", "5G", "Japan")
                 ),
-                Article(
+                FeedItem(
                         guid = "https://www.androidauthority.com/?p=986861",
                         title = "Report details just what Samsung is doing to update the Galaxy Fold",
                         author = "C. Scott Brown",
@@ -96,7 +96,7 @@ object ChannelFactory {
                 )
         )
 
-        return Channel(
+        return Feed(
                 title = "Android Authority",
                 link = "https://www.androidauthority.com",
                 description = "Android News, Reviews, How To",

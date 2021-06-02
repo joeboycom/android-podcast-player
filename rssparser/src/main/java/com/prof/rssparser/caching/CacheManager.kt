@@ -3,7 +3,7 @@ package com.prof.rssparser.caching
 import android.content.Context
 import android.util.Log
 import com.prof.rssparser.BuildConfig
-import com.prof.rssparser.Channel
+import com.prof.rssparser.Feed
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,7 +34,7 @@ internal class CacheManager(internal val database: CacheDatabase, // internal ju
     }
 
     /**
-     * Flush the [Channel] cached value for the [url] provided
+     * Flush the [Feed] cached value for the [url] provided
      *
      * @param url The url of the RSS feed.
      */
@@ -44,17 +44,17 @@ internal class CacheManager(internal val database: CacheDatabase, // internal ju
 
     /**
      *
-     * Cached the [Channel] provided as parameter. The key is the [url] and the [channel] is saved as bytes
+     * Cached the [Feed] provided as parameter. The key is the [url] and the [channel] is saved as bytes
      *
      * N.B. The [coroutineDispatcher] has to be Dispatchers.IO
      *
      * @param url The url of the RSS feed. The hash code of the url is the key.
-     * @param channel The [Channel] to cache
+     * @param channel The [Feed] to cache
      * @param cachedDate The cached date. This param is not used by the client but only for testing
      * @param libraryVersion The version of RSS Parser library. This param is not used by the client but only for testing
      *
      */
-    suspend fun cacheFeed(url: String, channel: Channel,
+    suspend fun cacheFeed(url: String, channel: Feed,
                           cachedDate: Long = System.currentTimeMillis(),
                           libraryVersion: Int = BuildConfig.VERSION_CODE) {
         // The coroutineDispatcher has to be Dispatchers.IO
@@ -90,10 +90,10 @@ internal class CacheManager(internal val database: CacheDatabase, // internal ju
     }
 
     /**
-     * Returns a cached [Channel] if present and not expired.
+     * Returns a cached [Feed] if present and not expired.
      *
      * When there is an update of the RSS library, the cache is invalidated just to avoid errors if a
-     * new parameter is added to the [Channel]
+     * new parameter is added to the [Feed]
      *
      * If the cached value is expired, the cache is flushed.
      *
@@ -102,7 +102,7 @@ internal class CacheManager(internal val database: CacheDatabase, // internal ju
      * @param url The url of the RSS feed. The hash code of the url is the key.
      *
      */
-    suspend fun getCachedFeed(url: String): Channel? = withContext(coroutineDispatcher) {
+    suspend fun getCachedFeed(url: String): Feed? = withContext(coroutineDispatcher) {
         val urlHash = url.hashCode()
 
         database.cachedProjectsDao().getCachedProject(urlHash)?.let { cachedFeed ->
@@ -117,7 +117,7 @@ internal class CacheManager(internal val database: CacheDatabase, // internal ju
                 var objectInput: ObjectInputStream?
                 try {
                     objectInput = ObjectInputStream(inputStream)
-                    val channelFromCache = objectInput.readObject() as Channel
+                    val channelFromCache = objectInput.readObject() as Feed
                     Log.d(TAG, "Feed restored from cache")
                     return@withContext channelFromCache
                 } catch (e: Exception) {

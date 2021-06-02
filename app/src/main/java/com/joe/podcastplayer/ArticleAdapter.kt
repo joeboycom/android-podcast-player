@@ -17,15 +17,14 @@
 
 package com.joe.podcastplayer
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.prof.rssparser.Article
+import com.prof.rssparser.FeedItem
 
 class ArticleAdapter : RecyclerView.Adapter<EpisodeItemViewHolder>() {
 
-    private var onClickListener: ((article: Article) -> Unit)? = null
-    var articles: ArrayList<Article>? = null
+    private var onClickListener: ((article: FeedItem) -> Unit)? = null
+    var articles: ArrayList<FeedItem>? = null
         set(value) {
             field = value
         }
@@ -41,7 +40,7 @@ class ArticleAdapter : RecyclerView.Adapter<EpisodeItemViewHolder>() {
         holderEpisode.bind(articles!![position])
     }
 
-    fun setOnClickListener(listener: ((article: Article) -> Unit)?) {
+    fun setOnClickListener(listener: ((article: FeedItem) -> Unit)?) {
         onClickListener = listener
     }
 }

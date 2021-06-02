@@ -1,11 +1,10 @@
 package com.joe.podcastplayer
 
-import android.util.Log
 import android.view.ViewGroup
 import com.joe.podcastplayer.base.BaseViewHolder
 import com.joe.podcastplayer.databinding.HolderItemEpisodeBinding
 import com.joe.podcastplayer.extension.onClick
-import com.prof.rssparser.Article
+import com.prof.rssparser.FeedItem
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -14,8 +13,8 @@ class EpisodeItemViewHolder(parent: ViewGroup) : BaseViewHolder<HolderItemEpisod
         fun newInstance(parent: ViewGroup) = EpisodeItemViewHolder(parent)
     }
 
-    private var onClickListener: ((article: Article) -> Unit)? = null
-    private var article: Article? = null
+    private var onClickListener: ((article: FeedItem) -> Unit)? = null
+    private var article: FeedItem? = null
 
     init {
         viewBinding.cardView.onClick {
@@ -25,7 +24,7 @@ class EpisodeItemViewHolder(parent: ViewGroup) : BaseViewHolder<HolderItemEpisod
         }
     }
 
-    fun bind(article: Article) {
+    fun bind(article: FeedItem) {
         this.article = article
         var pubDateString = article.pubDate
 
@@ -48,7 +47,7 @@ class EpisodeItemViewHolder(parent: ViewGroup) : BaseViewHolder<HolderItemEpisod
         viewBinding.pubDate.text = pubDateString
     }
 
-    fun setOnClickListener(listener: ((article: Article) -> Unit)?) {
+    fun setOnClickListener(listener: ((article: FeedItem) -> Unit)?) {
         onClickListener = listener
     }
 }

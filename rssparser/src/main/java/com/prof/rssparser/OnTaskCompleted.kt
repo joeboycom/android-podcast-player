@@ -18,6 +18,6 @@
 package com.prof.rssparser
 
 interface OnTaskCompleted {
-    fun onTaskCompleted(channel: Channel)
+    fun onTaskCompleted(channel: Feed)
     fun onError(e: Exception)
 }

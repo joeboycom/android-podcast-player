@@ -12,4 +12,13 @@
     <string name="alert_raw_parser_title">Add an RSS feed url</string>
     <string name="alert_raw_parser_positive">Ok</string>
     <string name="alert_raw_parser_negative">Cancel</string>
+
+    // audio player
+    <string name="rewind_label">Rewind</string>
+    <string name="fast_forward_label">Fast forward</string>
+    <string name="skip_episode_label">Skip episode</string>
+    <string name="play_label">Play</string>
+    <string name="pause_label">Pause</string>
+    <string name="position_default_label" translatable="false">00:00:00</string>
+
 </resources>

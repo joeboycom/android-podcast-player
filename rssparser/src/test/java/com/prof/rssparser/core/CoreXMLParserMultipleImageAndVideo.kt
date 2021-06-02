@@ -1,8 +1,8 @@
 package com.prof.rssparser.core
 
 import android.os.Build
-import com.prof.rssparser.Article
-import com.prof.rssparser.Channel
+import com.prof.rssparser.FeedItem
+import com.prof.rssparser.Feed
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -15,10 +15,10 @@ import org.robolectric.annotation.Config
 @Config(sdk = [Build.VERSION_CODES.P])
 class CoreXMLParserMultipleImageAndVideo {
 
-    private lateinit var articleList: MutableList<Article>
-    private lateinit var article: Article
+    private lateinit var articleList: MutableList<FeedItem>
+    private lateinit var article: FeedItem
     private val feedPath = "/feed-test-multiple-image-and-video.xml"
-    private lateinit var channel: Channel
+    private lateinit var channel: Feed
 
     @Before
     fun setUp() {

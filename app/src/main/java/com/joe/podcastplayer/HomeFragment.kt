@@ -1,13 +1,12 @@
 package com.joe.podcastplayer
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.HomeFragmentBinding
 import com.joe.podcastplayer.extension.setVisibility
-import com.prof.rssparser.Channel
+import com.prof.rssparser.Feed
 import com.prof.rssparser.Parser
 
 class HomeFragment : BaseFragment<HomeFragmentBinding>() {
@@ -108,7 +107,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         })
     }
 
-    private fun processChannelData(channel: Channel) {
+    private fun processChannelData(channel: Feed) {
         if (channel.title != null) {
             title = channel.title
         }

@@ -1,10 +1,10 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     ext.versions = [
-            'libVersionCode'     : 31004,
-            'libVersionName'     : '3.1.4',
+            'libVersionCode'     : 1,
+            'libVersionName'     : '1.0.0',
             'compileSdk'         : 30,
-            'minSdk'             : 14,
+            'minSdk'             : 21,
             'targetSdk'          : 30,
             'buildTools'         : '30.0.3',
             'okhttp'             : '3.12.0', // LTS version, update until December 31, 2021.
@@ -33,7 +33,12 @@ buildscript {
             'mockitoInline'      : '3.9.0',
             'robolectric'        : '4.5.1',
             'mockitoCore'        : '3.7.7',
-            'commonslangVersion' : '3.6'
+            'commonslangVersion' : '3.6',
+            'rxAndroidVersion'   : '2.1.1',
+            'rxJavaVersion'      : '2.2.2',
+            'mediaVersion'       :'1.1.0',
+            'preferenceVersion'  : '1.1.1',
+            'eventbusVersion'    : '3.2.0'
     ]
 
     ext.kotlin_version = "1.5.0"

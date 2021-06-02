@@ -77,8 +77,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
 
     // Rx
-    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
-    implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxAndroidVersion}"
+    implementation "io.reactivex.rxjava2:rxjava:${versions.rxJavaVersion}"
     implementation("com.trello.rxlifecycle4:rxlifecycle-android-lifecycle-kotlin:4.0.2")
     implementation("com.jakewharton.rxbinding4:rxbinding:4.0.0")
     implementation("com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0")
@@ -93,4 +95,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.7'
 
     implementation "org.apache.commons:commons-lang3:${versions.commonslangVersion}"
+    implementation "androidx.media:media:${versions.mediaVersion}"
+    implementation "androidx.preference:preference-ktx:${versions.preferenceVersion}"
+    implementation "org.greenrobot:eventbus:${versions.eventbusVersion}"
+    annotationProcessor "org.greenrobot:eventbus-annotation-processor:${versions.eventbusVersion}"
 }

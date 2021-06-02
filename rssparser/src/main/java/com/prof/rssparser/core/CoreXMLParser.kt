@@ -17,8 +17,8 @@
 
 package com.prof.rssparser.core
 
-import com.prof.rssparser.Article
-import com.prof.rssparser.Channel
+import com.prof.rssparser.FeedItem
+import com.prof.rssparser.Feed
 import com.prof.rssparser.Image
 import com.prof.rssparser.utils.RSSKeywords
 import org.xmlpull.v1.XmlPullParser
@@ -33,7 +33,7 @@ import java.util.regex.Pattern
 internal object CoreXMLParser {
 
     @Throws(XmlPullParserException::class, IOException::class)
-    fun parseXML(xml: String): Channel {
+    fun parseXML(xml: String): Feed {
 
         var channelTitle: String? = null
         var channelLink: String? = null
@@ -41,8 +41,8 @@ internal object CoreXMLParser {
         var channelImage: Image? = Image()
         var channelLastBuildDate: String? = null
         var channelUpdatePeriod: String? = null
-        val articleList = ArrayList<Article>()
-        var currentArticle = Article()
+        val articleList = ArrayList<FeedItem>()
+        var currentArticle = FeedItem()
         // This image url is extracted from the content and the description of the rss item.
         // It's a fallback just in case there aren't any images in the enclosure tag.
         var imageUrlFromContent: String? = null
@@ -227,7 +227,7 @@ internal object CoreXMLParser {
                     imageUrlFromContent = null
                 }
                 articleList.add(currentArticle)
-                currentArticle = Article()
+                currentArticle = FeedItem()
             } else if (eventType == XmlPullParser.END_TAG && xmlPullParser.name.equals(RSSKeywords.RSS_CHANNEL, ignoreCase = true)) {
                 // The channel is correctly parsed
                 insideChannel = false
@@ -243,7 +243,7 @@ internal object CoreXMLParser {
             channelImage = null
         }
 
-        return Channel(
+        return Feed(
                 title = channelTitle,
                 link = channelLink,
                 description = channelDescription,

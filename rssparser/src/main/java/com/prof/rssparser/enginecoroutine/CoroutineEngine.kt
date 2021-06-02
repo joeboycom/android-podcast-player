@@ -1,6 +1,6 @@
 package com.prof.rssparser.enginecoroutine
 
-import com.prof.rssparser.Channel
+import com.prof.rssparser.Feed
 import com.prof.rssparser.core.CoreXMLFetcher
 import com.prof.rssparser.core.CoreXMLParser
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +16,7 @@ internal object CoroutineEngine {
     }
 
     @Throws(Exception::class)
-    suspend fun parseXML(xml: String): Channel = withContext(Dispatchers.IO) {
+    suspend fun parseXML(xml: String): Feed = withContext(Dispatchers.IO) {
         return@withContext CoreXMLParser.parseXML(xml)
     }
 }

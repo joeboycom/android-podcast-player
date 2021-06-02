@@ -63,8 +63,8 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
 
     override fun initAction() {
         viewBinding.playAppCompatButton.onClick {
-//            val fragment = StatisticsFragment()
-//            (activity as MainActivity?)!!.loadChildFragment(fragment, TransitionEffect.SLIDE)
+            val fragment = PlayerFragment.newInstance(episodeTitle, episodeImageUrl)
+            (activity as MainActivity?)!!.loadChildFragment(fragment, TransitionEffect.SLIDE)
         }
     }
 
