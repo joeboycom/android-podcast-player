@@ -20,7 +20,7 @@
             app:scrimAnimationDuration="200">
             
             <ImageView
-                android:id="@+id/headerImageView"
+                android:id="@+id/ivHeaderImage"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:scaleType="centerCrop"
@@ -43,7 +43,7 @@
                     tools:text = "科技島讀" />
 
                 <TextView
-                    android:id="@+id/episodeTitleTextView"
+                    android:id="@+id/tvEpisodeTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
@@ -78,7 +78,7 @@
                 android:textColor="@color/white"
                 android:background="@drawable/background_5accf2_corner_infinity"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/episodeTitleTextView"
+                app:layout_constraintTop_toBottomOf="@+id/tvEpisodeTitle"
                 android:text = "播放" />
 
             <TextView
@@ -89,7 +89,7 @@
                 android:textSize="14sp"
                 android:textColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/episodeTitleTextView"
+                app:layout_constraintTop_toBottomOf="@+id/tvEpisodeTitle"
                 tools:text = "科技島讀是會員制媒體，專注於分析國際事件，解讀科技、商業與社會趨勢。我們從台灣出發，因此取名「島」" />
 
         </LinearLayout>

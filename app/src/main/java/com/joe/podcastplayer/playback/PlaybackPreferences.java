@@ -108,7 +108,7 @@ public class PlaybackPreferences implements SharedPreferences.OnSharedPreference
     }
 
     public static boolean getCurrentEpisodeIsStream() {
-        return prefs.getBoolean(PREF_CURRENT_EPISODE_IS_STREAM, true);
+        return true;
     }
 
     public static boolean getCurrentEpisodeIsVideo() {

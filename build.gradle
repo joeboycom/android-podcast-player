@@ -36,7 +36,7 @@ buildscript {
             'commonslangVersion' : '3.6',
             'rxAndroidVersion'   : '2.1.1',
             'rxJavaVersion'      : '2.2.2',
-            'mediaVersion'       :'1.1.0',
+            'mediaVersion'       :'1.2.0',
             'preferenceVersion'  : '1.1.1',
             'eventbusVersion'    : '3.2.0'
     ]

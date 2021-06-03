@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.HomeFragmentBinding
 import com.joe.podcastplayer.extension.setVisibility
+import com.joe.podcastplayer.extension.toJson
 import com.prof.rssparser.Feed
 import com.prof.rssparser.Parser
 
@@ -96,7 +97,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
     override fun initAction() {
         adapter.setOnClickListener {
-            val fragment = EpisodeFragment.newInstance(title, it.title, it.image, it.description)
+            val fragment = EpisodeFragment.newInstance(title, it.toJson())
             (activity as MainActivity?)?.showFragment(fragment, TransitionEffect.SLIDE)
         }
     }
@@ -112,7 +113,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
             title = channel.title
         }
 
-        imageLoader.load(channel.image?.url, viewBinding.headerImageView)
+        imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
         adapter.articles = channel.articles
         viewBinding.recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()

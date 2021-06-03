@@ -89,8 +89,8 @@ public class AudioPlayerFragment extends Fragment {
         txtvFF = root.findViewById(R.id.txtvFF);
         butSkip = root.findViewById(R.id.butSkip);
         progressIndicator = root.findViewById(R.id.progLoading);
-        cardViewSeek = root.findViewById(R.id.cardViewSeek);
-        txtvSeek = root.findViewById(R.id.txtvSeek);
+//        cardViewSeek = root.findViewById(R.id.cardViewSeek);
+//        txtvSeek = root.findViewById(R.id.txtvSeek);
 
         setupLengthTextView();
         setupControlButtons();

@@ -3,31 +3,30 @@ package com.joe.podcastplayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import com.google.gson.reflect.TypeToken
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.EpisodeFragmentBinding
+import com.joe.podcastplayer.extension.className
+import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.extension.onClick
+import com.joe.podcastplayer.extension.toJson
+import com.prof.rssparser.FeedItem
 
 class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
 
     companion object {
         private const val BUNDLE_CHANNEL_TITLE = "BUNDLE_CHANNEL_TITLE"
-        private const val BUNDLE_EPISODE_TITLE = "BUNDLE_EPISODE_TITLE"
-        private const val BUNDLE_EPISODE_IMAGE_URL = "BUNDLE_EPISODE_IMAGE_URL"
-        private const val BUNDLE_EPISODE_DESCRIPTION = "BUNDLE_EPISODE_DESCRIPTION"
-        fun newInstance(channelTitle: String?, episodeTitle: String?, episodeImageUrl: String?, episodeDescription: String?): EpisodeFragment = EpisodeFragment().apply {
+        private const val BUNDLE_FEED_ITEM = "BUNDLE_FEED_ITEM"
+        fun newInstance(channelTitle: String?, feedItem: String?): EpisodeFragment = EpisodeFragment().apply {
             val bundle = Bundle()
             bundle.putString(BUNDLE_CHANNEL_TITLE, channelTitle)
-            bundle.putString(BUNDLE_EPISODE_TITLE, episodeTitle)
-            bundle.putString(BUNDLE_EPISODE_IMAGE_URL, episodeImageUrl)
-            bundle.putString(BUNDLE_EPISODE_DESCRIPTION, episodeDescription)
+            bundle.putString(BUNDLE_FEED_ITEM, feedItem)
             arguments = bundle
         }
     }
 
     private var channelTitle = ""
-    private var episodeTitle = ""
-    private var episodeImageUrl = ""
-    private var episodeDescription = ""
+    private var feedItem: FeedItem? = null
 
     override fun enableEventBus(): Boolean = false
 
@@ -42,11 +41,8 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     override fun initIntent() {
         val bundle = arguments
         channelTitle = bundle!!.getString(BUNDLE_CHANNEL_TITLE, "")
-        episodeTitle = bundle.getString(BUNDLE_EPISODE_TITLE, "")
-        episodeImageUrl = bundle.getString(BUNDLE_EPISODE_IMAGE_URL, "")
-        episodeDescription = bundle.getString(BUNDLE_EPISODE_DESCRIPTION, "")
-
-        Log.e("HAHA", "$channelTitle $episodeDescription")
+        feedItem = gson.fromJson(bundle.getString(BUNDLE_FEED_ITEM, ""), FeedItem::class.java)
+        Log.e(className, "feedItem:$feedItem")
     }
 
     override fun init() {
@@ -55,15 +51,16 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
 
     override fun initLayout() {
         viewBinding.episodeChannelTextView.text = channelTitle
-        viewBinding.episodeTitleTextView.text = episodeTitle
-        viewBinding.episodeDescriptionTextView.text = episodeDescription
+        viewBinding.tvEpisodeTitle.text = feedItem?.title
+        viewBinding.episodeDescriptionTextView.text = feedItem?.description
 
-        imageLoader.load(episodeImageUrl, viewBinding.headerImageView)
+        imageLoader.load(feedItem?.image, viewBinding.ivHeaderImage)
     }
 
     override fun initAction() {
         viewBinding.playAppCompatButton.onClick {
-            val fragment = PlayerFragment.newInstance(episodeTitle, episodeImageUrl)
+            if (feedItem == null) return@onClick
+            val fragment = PlayerFragment.newInstance(feedItem!!.toJson())
             (activity as MainActivity?)!!.loadChildFragment(fragment, TransitionEffect.SLIDE)
         }
     }

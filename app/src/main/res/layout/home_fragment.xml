@@ -19,7 +19,7 @@
             app:scrimAnimationDuration="200">
 
             <ImageView
-                android:id="@+id/headerImageView"
+                android:id="@+id/ivHeaderImage"
                 android:layout_width="match_parent"
                 android:layout_height="240dp"
                 android:scaleType="centerCrop"

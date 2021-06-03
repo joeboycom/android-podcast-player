@@ -13,11 +13,11 @@ import java.util.*
 
 val Any.className get() = this.javaClass.simpleName
 
-private var defaultGson: Gson = GsonBuilder().setPrettyPrinting().create()
+var gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
 fun Any.toJson(): String? {
     return try {
-        defaultGson.toJson(this)
+        gson.toJson(this)
     } catch (e: Exception) {
         return null
     }
