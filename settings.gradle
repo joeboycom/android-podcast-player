@@ -1,2 +1,2 @@
-rootProject.name = "PodcastPlayer"
+rootProject.name = "android-podcast-player"
 include ':app', ':rssparser'
