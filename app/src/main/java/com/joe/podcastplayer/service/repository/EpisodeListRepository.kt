@@ -4,5 +4,5 @@ import com.prof.rssparser.FeedItem
 
 interface EpisodeListRepository {
 
-    suspend fun getSongs(): List<FeedItem>
+    suspend fun getFeedItems(): List<FeedItem>
 }

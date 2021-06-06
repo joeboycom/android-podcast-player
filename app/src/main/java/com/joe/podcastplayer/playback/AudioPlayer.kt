@@ -16,6 +16,7 @@ class AudioPlayer : IPlayer {
 
     private var mediaPlayer: MediaPlayer? = null
     var onMpPrepareListener: ((mp: MediaPlayer) -> Unit)? = null
+    var onMpBufferingUpdateListener: ((currentPosition: Int) -> Unit)? = null
 
     override fun setPlaybackParams(speed: Float, skipSilence: Boolean) {
         //Default player does not support silence skipping
@@ -54,6 +55,7 @@ class AudioPlayer : IPlayer {
         }
 
         mediaPlayer?.setOnBufferingUpdateListener { mp, percent ->
+            onMpBufferingUpdateListener?.invoke(mp.currentPosition)
             Log.e("HAHA", "setOnBufferingUpdateListener isPlaying: ${mp.isPlaying}")
         }
 

@@ -80,7 +80,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                Log.e("HAHA", "onStopTrackingTouch $seekbarScrollingStart")
+                Log.e("HAHA", "onStopTrackingTouch $seekbarScrollingStart ${seekBar!!.progress} ${seekBar.max}")
                 if (seekbarScrollingStart) {
                     nowPlayingViewModel.changePlaybackPosition(seekBar!!.progress, seekBar.max)
                     seekbarScrollingStart = false
@@ -153,13 +153,12 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
 
 
         viewBinding.smallPlayer.playPauseImage.setOnClickListener {
-            episodeViewModel.playMedia(feedItem!!)
-//            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(it.id) }
+            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(feedItem) }
         }
 
         viewBinding.largePlayer.largePlayPauseButton.setOnClickListener {
             episodeViewModel.playMedia(feedItem!!)
-//            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(it.id) }
+            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(feedItem) }
         }
 
         viewBinding.largePlayer.largePreviousButton.setOnClickListener {
@@ -221,6 +220,11 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     private fun updateUI(view: View?, metadata: NowPlayingViewModel.NowPlayingMetadata) {
         Log.e("HAHA-----", "updateUI")
         if (view == null) return
+        Log.e("HAHA", "${metadata.albumArtUri}")
+        Log.e("HAHA", "${metadata.duration}")
+        Log.e("HAHA", "${metadata.id}")
+        Log.e("HAHA", "${metadata.title}")
+        Log.e("HAHA", "${metadata.subtitle}")
         if (metadata.albumArtUri == Uri.EMPTY) {
             viewBinding.smallPlayer.smallCover.setImageResource(R.drawable.ic_default_cover_icon)
             viewBinding.smallPlayer.smallCover.setBackgroundResource(R.drawable.ic_default_cover_background)
@@ -278,7 +282,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     private fun updateProgressBar(progress: Int) {
-        Log.e("HAHA-----", "updateProgressBar")
+        Log.e("HAHA-----", "updateProgressBar $seekbarScrollingStart $progress")
         if (seekbarScrollingStart) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             viewBinding.smallPlayer.smallSeekBar.setProgress(progress, true)

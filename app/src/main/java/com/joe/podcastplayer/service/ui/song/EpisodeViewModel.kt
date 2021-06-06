@@ -39,17 +39,20 @@ class EpisodeViewModel(
         }
     }
 
-    fun playMedia(feedItem: FeedItem, pauseAllowed: Boolean = true) {
+    fun playMedia(feedItem: FeedItem?, pauseAllowed: Boolean = true) {
         Log.e("HAHA", "playMedia:$feedItem")
+        if (feedItem == null) return
         val nowPlaying = musicServiceConnection.nowPlaying.value
         val transportControls = musicServiceConnection.transportControls
 
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
-        if (isPrepared && feedItem.audio.toString() == nowPlaying?.mediaUri.toString()) {
+        Log.e("HAHA", "playbackState1:${feedItem.guid.toString()}")
+        Log.e("HAHA", "playbackState2:${nowPlaying?.id.toString()}")
+        if (isPrepared && feedItem.guid.toString() == nowPlaying?.id.toString()) {
             musicServiceConnection.playbackState.value?.let { playbackState ->
+                Log.e("HAHA", "playbackState:$playbackState")
                 when {
-                    playbackState.isPlaying ->
-                        if (pauseAllowed) transportControls.pause() else Unit
+                    playbackState.isPlaying -> transportControls.pause()
                     playbackState.isPlayEnabled -> transportControls.play()
                     else -> {
                         Log.w(

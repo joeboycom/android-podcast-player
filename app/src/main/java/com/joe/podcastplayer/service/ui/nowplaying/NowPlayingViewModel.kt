@@ -31,6 +31,7 @@ class NowPlayingViewModel(
     data class NowPlayingMetadata(
         val id: String,
         val albumArtUri: Uri,
+        val mediaUri: Uri,
         val title: String?,
         val subtitle: String?,
         val duration: String
@@ -77,7 +78,7 @@ class NowPlayingViewModel(
         )
 
     private val playbackStateObserver = Observer<PlaybackStateCompat> {
-        Log.e("HAHA+++++++", "playbackStateObserver $it")
+        Log.e("HAHA+++++++", "playbackStateObserver")
         playbackState = it ?: EMPTY_PLAYBACK_STATE
         val metadata = musicServiceConnection.nowPlaying.value ?: NOTHING_PLAYING
         updateState(playbackState, metadata)
@@ -154,6 +155,7 @@ class NowPlayingViewModel(
      */
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
+        Log.e("HAHA", "checkPlaybackPosition $currPosition $mediaDuration")
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
             if (mediaDuration > 0) {
@@ -177,6 +179,7 @@ class NowPlayingViewModel(
             val nowPlayingMetadata = NowPlayingMetadata(
                 mediaMetadata.id!!,
                 mediaMetadata.displayIconUri,
+                mediaMetadata.mediaUri,
                 mediaMetadata.title?.trim(),
                 mediaMetadata.displaySubtitle?.trim(),
                 NowPlayingMetadata.timestampToMSS(context, mediaMetadata.duration)
@@ -194,7 +197,7 @@ class NowPlayingViewModel(
 
     override fun onCleared() {
         super.onCleared()
-
+        Log.e("HAHA", "onCleared")
         // Remove the permanent observers from the MusicServiceConnection.
         musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
         musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)

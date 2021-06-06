@@ -1,6 +1,5 @@
 package com.joe.podcastplayer.playback
 
-import android.R.attr.track
 import android.app.PendingIntent
 import android.content.*
 import android.graphics.BitmapFactory
@@ -22,16 +21,22 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
 import com.joe.podcastplayer.R
+import com.prof.rssparser.FeedItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import java.io.IOException
 
 
-class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener, OnAudioFocusChangeListener {
+class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener, OnAudioFocusChangeListener, CoroutineScope by MainScope() {
     companion object {
         const val COMMAND_EXAMPLE = "command_example"
     }
 
+    private lateinit var feedItemList: List<FeedItem>
     private var mMediaPlayer: AudioPlayer? = null
     private var mMediaSessionCompat: MediaSessionCompat? = null
+    private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
+
     private val mNoisyReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (mMediaPlayer != null && mMediaPlayer!!.isPlaying()) {
@@ -149,10 +154,19 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
     private fun initMediaPlayer() {
         mMediaPlayer = AudioPlayer()
         mMediaPlayer?.initMediaPlayer(applicationContext)
-        mMediaPlayer!!.onMpPrepareListener = {
-
-            val metadataBuilder = MediaMetadataCompat.Builder().putLong(MediaMetadataCompat.METADATA_KEY_DURATION, it.duration.toLong()).build()
+        mMediaPlayer?.onMpPrepareListener = {
+            val metadataBuilder = MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "1")
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, "METADATA_KEY_DISPLAY_TITLE")
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, "METADATA_KEY_DISPLAY_SUBTITLE")
+                .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, "https://i1.sndcdn.com/artworks-Z7zJRFuDjv63KCHv-5W8whA-t3000x3000.jpg")
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, "https://feeds.soundcloud.com/stream/1036317475-daodutech-podcast-colorful-desktop-computer.mp3")
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, it.duration.toLong())
+                .build()
             mMediaSessionCompat?.setMetadata(metadataBuilder)
+        }
+        mMediaPlayer?.onMpBufferingUpdateListener = {
+//            setMediaPlaybackState(PlaybackStateCompat.STATE_BUFFERING, it)
         }
     }
 
@@ -184,14 +198,15 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
         sessionToken = mMediaSessionCompat!!.sessionToken
     }
 
-    private fun setMediaPlaybackState(state: Int) {
+    private fun setMediaPlaybackState(state: Int, position: Int? = null) {
         val playbackstateBuilder = PlaybackStateCompat.Builder()
-        if (state == PlaybackStateCompat.STATE_PLAYING) {
-            playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PAUSE)
-        } else {
-            playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PLAY)
+        when(state) {
+            PlaybackStateCompat.STATE_PLAYING -> playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PAUSE)
+            else -> playbackstateBuilder.setActions(PlaybackStateCompat.ACTION_PLAY_PAUSE or PlaybackStateCompat.ACTION_PLAY)
         }
-        playbackstateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0f)
+        Log.e("HAHA", "setMediaPlaybackState: $state $position")
+        if (state == PlaybackStateCompat.STATE_BUFFERING) playbackstateBuilder.setState(state, position?.toLong() ?: 0, 0f)
+
         mMediaSessionCompat!!.setPlaybackState(playbackstateBuilder.build())
     }
 
