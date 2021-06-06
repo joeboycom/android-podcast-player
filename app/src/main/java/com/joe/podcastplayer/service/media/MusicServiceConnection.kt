@@ -9,9 +9,10 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.service.extension.*
 
-private const val TAG = "MusicServiceConnection"
+private const val TAG = "HAHAHAHA"
 
 class MusicServiceConnection(val context: Context, serviceComponent: ComponentName) {
     val isConnected = MutableLiveData<Boolean>()
@@ -34,7 +35,9 @@ class MusicServiceConnection(val context: Context, serviceComponent: ComponentNa
         context,
         serviceComponent,
         mediaBrowserConnectionCallback, null
-    ).apply { connect() }
+    ).apply {
+        Log.d(className, "connect")
+        connect() }
 
 
     private inner class MediaBrowserConnectionCallback(private val context: Context) :
@@ -73,13 +76,14 @@ class MusicServiceConnection(val context: Context, serviceComponent: ComponentNa
     private inner class MediaControllerCallback : MediaControllerCompat.Callback() {
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            Log.d(TAG, "MediaControllerCallback onPlaybackStateChanged:$state")
+            Log.d(TAG, "MediaControllerCallback onPlaybackStateChanged:${state.toString()}")
             val playbackStateCompat = state ?: EMPTY_PLAYBACK_STATE
             playbackState.postValue(state ?: EMPTY_PLAYBACK_STATE)
         }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            Log.d(TAG, "MediaControllerCallback onMetadataChanged:$metadata")
+            Log.d(TAG, "MediaControllerCallback onMetadataChanged:${metadata.toString()}")
+
             nowPlaying.postValue(
                 if (metadata?.id == null) {
                     NOTHING_PLAYING

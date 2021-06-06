@@ -1,19 +1,16 @@
 package com.joe.podcastplayer
 
-import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AlertDialog
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.snackbar.Snackbar
+import androidx.fragment.app.viewModels
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.PlayerFragmentBinding
 import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.extension.onClick
+import com.joe.podcastplayer.service.di.InjectorUtils
 import com.prof.rssparser.FeedItem
 import io.reactivex.rxjava3.disposables.Disposable
-import org.greenrobot.eventbus.EventBus
-import java.text.NumberFormat
 
 class PlayerFragment : BaseFragment<PlayerFragmentBinding>() {
 
@@ -32,6 +29,9 @@ class PlayerFragment : BaseFragment<PlayerFragmentBinding>() {
         }
     }
 
+    private val playerViewModel: PlayerViewModel by viewModels {
+        InjectorUtils.provideNowPlayingViewModel(requireContext())
+    }
     private var feedItem: FeedItem? = null
     private var controller: PlaybackController? = null
     private val disposable: Disposable? = null
@@ -66,8 +66,10 @@ class PlayerFragment : BaseFragment<PlayerFragmentBinding>() {
 
     override fun initAction() {
         viewBinding.butPlay.onClick {
+            Log.e("HAHA-----", "butPlay onClick")
             if (controller != null) {
                 controller!!.init()
+                Log.e("HAHA-----", "playPause")
                 controller!!.playPause()
             }
         }

@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
@@ -22,21 +23,29 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.joe.podcastplayer.R
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.NowPlayingFragmentBinding
+import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.service.di.InjectorUtils
 import com.joe.podcastplayer.service.ui.nowplaying.NowPlayingViewModel.NowPlayingMetadata.Companion.timestampToMSS
-import com.joe.podcastplayer.service.ui.song.SongListViewModel
+import com.joe.podcastplayer.service.ui.song.EpisodeViewModel
+import com.prof.rssparser.FeedItem
 
 
 class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     companion object {
         const val TAG = "NowPlayingFragment"
-        fun newInstance() = NowPlayingFragment()
+        private const val BUNDLE_FEED_ITEM = "BUNDLE_FEED_ITEM"
+        fun newInstance(feedItem: String?): NowPlayingFragment = NowPlayingFragment().apply {
+            val bundle = Bundle()
+            bundle.putString(BUNDLE_FEED_ITEM, feedItem)
+            arguments = bundle
+        }
     }
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private var seekbarScrollingStart = false
+    private var feedItem: FeedItem? = null
 
-    private val songListViewModel: SongListViewModel by viewModels {
+    private val episodeViewModel: EpisodeViewModel by viewModels {
         InjectorUtils.provideSongListViewModel(requireContext())
     }
 
@@ -45,11 +54,11 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     override fun initName() {
-
     }
 
     override fun initIntent() {
-
+        val bundle = arguments
+        feedItem = gson.fromJson(bundle!!.getString(BUNDLE_FEED_ITEM, ""), FeedItem::class.java)
     }
 
     override fun init() {
@@ -144,11 +153,13 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
 
 
         viewBinding.smallPlayer.playPauseImage.setOnClickListener {
-            nowPlayingViewModel.mediaMetadata.value?.let { songListViewModel.playMediaId(it.id) }
+            episodeViewModel.playMedia(feedItem!!)
+//            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(it.id) }
         }
 
         viewBinding.largePlayer.largePlayPauseButton.setOnClickListener {
-            nowPlayingViewModel.mediaMetadata.value?.let { songListViewModel.playMediaId(it.id) }
+            episodeViewModel.playMedia(feedItem!!)
+//            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(it.id) }
         }
 
         viewBinding.largePlayer.largePreviousButton.setOnClickListener {
@@ -208,6 +219,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     private fun updateUI(view: View?, metadata: NowPlayingViewModel.NowPlayingMetadata) {
+        Log.e("HAHA-----", "updateUI")
         if (view == null) return
         if (metadata.albumArtUri == Uri.EMPTY) {
             viewBinding.smallPlayer.smallCover.setImageResource(R.drawable.ic_default_cover_icon)
@@ -266,6 +278,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     private fun updateProgressBar(progress: Int) {
+        Log.e("HAHA-----", "updateProgressBar")
         if (seekbarScrollingStart) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             viewBinding.smallPlayer.smallSeekBar.setProgress(progress, true)

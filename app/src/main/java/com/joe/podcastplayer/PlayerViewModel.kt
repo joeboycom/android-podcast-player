@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.service.ui.nowplaying
+package com.joe.podcastplayer
 
 import android.content.Context
 import android.net.Uri
@@ -11,15 +11,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.joe.podcastplayer.R
-import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.service.extension.*
 import com.joe.podcastplayer.service.media.EMPTY_PLAYBACK_STATE
 import com.joe.podcastplayer.service.media.MusicServiceConnection
 import com.joe.podcastplayer.service.media.NOTHING_PLAYING
 import kotlin.math.floor
+import com.joe.podcastplayer.service.extension.displaySubtitle as displaySubtitle1
 
-class NowPlayingViewModel(
+class PlayerViewModel(
     private val context: Context,
     musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
@@ -77,34 +76,30 @@ class NowPlayingViewModel(
         )
 
     private val playbackStateObserver = Observer<PlaybackStateCompat> {
-        Log.e("HAHA+++++++", "playbackStateObserver $it")
         playbackState = it ?: EMPTY_PLAYBACK_STATE
         val metadata = musicServiceConnection.nowPlaying.value ?: NOTHING_PLAYING
         updateState(playbackState, metadata)
     }
 
     private val mediaMetadataObserver = Observer<MediaMetadataCompat> {
-        Log.e("HAHA+++++++", "mediaMetadataObserver")
         updateState(playbackState, it)
         mediaDuration = it.duration
     }
 
     private val shuffleModeObserver = Observer<Int> {
-        Log.e("HAHA+++++++", "shuffleModeObserver")
         shuffleMode.postValue(it)
     }
 
     private val repeatModeObserver = Observer<Int> {
-        Log.e("HAHA+++++++", "repeatModeObserver")
         repeatMode.postValue(it)
     }
 
     private val musicServiceConnection = musicServiceConnection.also {
-        Log.e("HAHA+++++++", "musicServiceConnection")
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
         it.shuffleModeState.observeForever(shuffleModeObserver)
         it.repeatModeState.observeForever(repeatModeObserver)
+        Log.e("HAHA", "musicServiceConnection")
         checkPlaybackPosition()
     }
 
@@ -141,12 +136,6 @@ class NowPlayingViewModel(
         musicServiceConnection.transportControls.setRepeatMode(targetRepeatMode)
     }
 
-    fun changePlaybackPosition(seekBarProgress: Int, seekBarMax: Int) {
-        Log.e(className, "seekBarProgress:$seekBarProgress seekBarMax:$seekBarMax")
-        val lastPosition = mediaDuration*1L*seekBarProgress/seekBarMax
-        Log.e(className, "lastPosition:$lastPosition")
-        musicServiceConnection.transportControls.seekTo(lastPosition)
-    }
     /**
      * Internal function that recursively calls itself every [POSITION_UPDATE_INTERVAL_MILLIS] ms
      * to check the current playback position and updates the corresponding LiveData object when it
@@ -154,6 +143,7 @@ class NowPlayingViewModel(
      */
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
+        Log.e("HAHA", "checkPlaybackPosition $currPosition")
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
             if (mediaDuration > 0) {
@@ -171,14 +161,13 @@ class NowPlayingViewModel(
         playbackState: PlaybackStateCompat,
         mediaMetadata: MediaMetadataCompat
     ) {
-        Log.e("HAHA", "updateState ${mediaMetadata.duration}")
         // Only update media item once we have duration available
         if (mediaMetadata.duration != 0L && mediaMetadata.id != null) {
             val nowPlayingMetadata = NowPlayingMetadata(
                 mediaMetadata.id!!,
                 mediaMetadata.displayIconUri,
                 mediaMetadata.title?.trim(),
-                mediaMetadata.displaySubtitle?.trim(),
+                mediaMetadata.displaySubtitle1?.trim(),
                 NowPlayingMetadata.timestampToMSS(context, mediaMetadata.duration)
             )
             this.mediaMetadata.postValue(nowPlayingMetadata)
@@ -210,10 +199,10 @@ class NowPlayingViewModel(
 
         @Suppress("unchecked_cast")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return NowPlayingViewModel(context, musicServiceConnection) as T
+            return PlayerViewModel(context, musicServiceConnection) as T
         }
     }
 }
 
-private const val POSITION_UPDATE_INTERVAL_MILLIS = 100L
+private const val /**/POSITION_UPDATE_INTERVAL_MILLIS = 100L
 

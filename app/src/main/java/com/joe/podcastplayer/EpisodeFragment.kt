@@ -1,15 +1,19 @@
 package com.joe.podcastplayer
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
-import com.google.gson.reflect.TypeToken
+import androidx.fragment.app.viewModels
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.EpisodeFragmentBinding
 import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.extension.onClick
 import com.joe.podcastplayer.extension.toJson
+import com.joe.podcastplayer.service.di.InjectorUtils
+import com.joe.podcastplayer.service.ui.nowplaying.NowPlayingFragment
+import com.joe.podcastplayer.service.ui.song.EpisodeViewModel
 import com.prof.rssparser.FeedItem
 
 class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
@@ -25,6 +29,10 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
         }
     }
 
+    private val episodeViewModel: EpisodeViewModel by viewModels() {
+        InjectorUtils.provideSongListViewModel(requireContext())
+    }
+    private val handler = Handler()
     private var channelTitle = ""
     private var feedItem: FeedItem? = null
 
@@ -60,12 +68,19 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     override fun initAction() {
         viewBinding.playAppCompatButton.onClick {
             if (feedItem == null) return@onClick
-            val fragment = PlayerFragment.newInstance(feedItem!!.toJson())
+            val fragment = NowPlayingFragment.newInstance(feedItem!!.toJson())
             (activity as MainActivity?)!!.loadChildFragment(fragment, TransitionEffect.SLIDE)
+
+            playPodcast(feedItem!!)
         }
     }
 
     override fun initObserver() {
     }
 
+    private fun playPodcast(feedItem: FeedItem) {
+        handler.postDelayed({
+            episodeViewModel.playMedia(feedItem)
+        }, 1000)
+    }
 }

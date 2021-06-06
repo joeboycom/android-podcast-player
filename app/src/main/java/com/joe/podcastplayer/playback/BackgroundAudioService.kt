@@ -1,5 +1,6 @@
 package com.joe.podcastplayer.playback
 
+import android.R.attr.track
 import android.app.PendingIntent
 import android.content.*
 import android.graphics.BitmapFactory
@@ -7,32 +8,33 @@ import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.media.MediaPlayer
 import android.media.MediaPlayer.OnCompletionListener
+import android.net.Uri
 import android.os.Bundle
-import android.os.PowerManager
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.text.TextUtils
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.MediaBrowserServiceCompat
 import androidx.media.session.MediaButtonReceiver
 import com.joe.podcastplayer.R
-import com.joe.podcastplayer.playback.BackgroundAudioService
 import java.io.IOException
+
 
 class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener, OnAudioFocusChangeListener {
     companion object {
         const val COMMAND_EXAMPLE = "command_example"
     }
 
-    private var mMediaPlayer: MediaPlayer? = null
+    private var mMediaPlayer: AudioPlayer? = null
     private var mMediaSessionCompat: MediaSessionCompat? = null
     private val mNoisyReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (mMediaPlayer != null && mMediaPlayer!!.isPlaying) {
+            if (mMediaPlayer != null && mMediaPlayer!!.isPlaying()) {
                 mMediaPlayer!!.pause()
             }
         }
@@ -51,36 +53,62 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
 
         override fun onPause() {
             super.onPause()
-            if (mMediaPlayer!!.isPlaying) {
+            if (mMediaPlayer!!.isPlaying()) {
                 mMediaPlayer!!.pause()
                 setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED)
                 showPausedNotification()
             }
         }
 
-        override fun onPlayFromMediaId(mediaId: String, extras: Bundle) {
-            super.onPlayFromMediaId(mediaId, extras)
+        override fun onPlayFromUri(uri: Uri?, extras: Bundle?) {
+            super.onPlayFromUri(uri, extras)
+            Log.e("HAHA", "onPlayFromUri ${uri.toString()}")
+
             try {
-                val afd = resources.openRawResourceFd(Integer.valueOf(mediaId)) ?: return
                 try {
-                    mMediaPlayer!!.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                    Log.e("HAHA1", "1")
+                    mMediaPlayer!!.setDataSource(uri.toString())
                 } catch (e: IllegalStateException) {
+                    Log.e("HAHA1", "2")
                     mMediaPlayer!!.release()
                     initMediaPlayer()
-                    mMediaPlayer!!.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                    mMediaPlayer!!.setDataSource(uri.toString())
                 }
-                afd.close()
-                initMediaSessionMetadata()
+//                initMediaSessionMetadata()
             } catch (e: IOException) {
                 return
             }
             try {
+                Log.e("HAHA1", "3")
                 mMediaPlayer!!.prepare()
             } catch (e: IOException) {
+                Log.e("HAHA1", "4")
             }
-
-            //Work with extras here if you want
         }
+//        override fun onPlayFromMediaId(mediaId: String, extras: Bundle) {
+//            super.onPlayFromMediaId(mediaId, extras)
+//            Log.e("HAHA", "onPlayFromUri")
+//            try {
+//                val afd = resources.openRawResourceFd(Integer.valueOf(mediaId)) ?: return
+//                try {
+//                    mMediaPlayer!!.setDataSource("https://feeds.soundcloud.com/stream/1036317475-daodutech-podcast-colorful-desktop-computer.mp3")
+//                } catch (e: IllegalStateException) {
+//                    mMediaPlayer!!.release()
+//                    initMediaPlayer()
+//                    mMediaPlayer!!.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+//                }
+//                afd.close()
+//                initMediaSessionMetadata()
+//            } catch (e: IOException) {
+//                return
+//            }
+//            try {
+//                mMediaPlayer!!.prepare()
+//            } catch (e: IOException) {
+//            }
+//
+//            //Work with extras here if you want
+//        }
 
         override fun onCommand(command: String, extras: Bundle, cb: ResultReceiver) {
             super.onCommand(command, extras, cb)
@@ -96,6 +124,7 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
 
     override fun onCreate() {
         super.onCreate()
+        Log.e("HAHA1", "onCreate")
         initMediaPlayer()
         initMediaSession()
         initNoisyReceiver()
@@ -109,6 +138,7 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e("HAHA1", "onDestroy")
         val audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         audioManager.abandonAudioFocus(this)
         unregisterReceiver(mNoisyReceiver)
@@ -117,10 +147,13 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
     }
 
     private fun initMediaPlayer() {
-        mMediaPlayer = MediaPlayer()
-        mMediaPlayer!!.setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
-        mMediaPlayer!!.setAudioStreamType(AudioManager.STREAM_MUSIC)
-        mMediaPlayer!!.setVolume(1.0f, 1.0f)
+        mMediaPlayer = AudioPlayer()
+        mMediaPlayer?.initMediaPlayer(applicationContext)
+        mMediaPlayer!!.onMpPrepareListener = {
+
+            val metadataBuilder = MediaMetadataCompat.Builder().putLong(MediaMetadataCompat.METADATA_KEY_DURATION, it.duration.toLong()).build()
+            mMediaSessionCompat?.setMetadata(metadataBuilder)
+        }
     }
 
     private fun showPlayingNotification() {
@@ -201,7 +234,7 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
     override fun onAudioFocusChange(focusChange: Int) {
         when (focusChange) {
             AudioManager.AUDIOFOCUS_LOSS -> {
-                if (mMediaPlayer!!.isPlaying) {
+                if (mMediaPlayer!!.isPlaying()) {
                     mMediaPlayer!!.stop()
                 }
             }
@@ -215,7 +248,7 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
             }
             AudioManager.AUDIOFOCUS_GAIN -> {
                 if (mMediaPlayer != null) {
-                    if (!mMediaPlayer!!.isPlaying) {
+                    if (!mMediaPlayer!!.isPlaying()) {
                         mMediaPlayer!!.start()
                     }
                     mMediaPlayer!!.setVolume(1.0f, 1.0f)
@@ -225,12 +258,14 @@ class BackgroundAudioService : MediaBrowserServiceCompat(), OnCompletionListener
     }
 
     override fun onCompletion(mediaPlayer: MediaPlayer) {
+        Log.e("HAHA1", "onCompletion")
         if (mMediaPlayer != null) {
             mMediaPlayer!!.release()
         }
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        Log.e("HAHA1", "onStartCommand")
         MediaButtonReceiver.handleIntent(mMediaSessionCompat, intent)
         return super.onStartCommand(intent, flags, startId)
     }

@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.joe.podcastplayer.R
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.FragmentSongListBinding
 import com.joe.podcastplayer.service.data.Song
@@ -21,7 +20,7 @@ class SongListFragment : BaseFragment<FragmentSongListBinding>(){
         fun newInstance() = SongListFragment()
     }
 
-    private val songListViewModel: SongListViewModel by viewModels() {
+    private val episodeViewModel: EpisodeViewModel by viewModels() {
         InjectorUtils.provideSongListViewModel(requireContext())
     }
 
@@ -57,7 +56,7 @@ class SongListFragment : BaseFragment<FragmentSongListBinding>(){
             layoutManager = LinearLayoutManager(activity)
             adapter = songAdapter
         }
-        songListViewModel.songs.observe(this.viewLifecycleOwner, Observer<List<Song>> { songs ->
+        episodeViewModel.songs.observe(this.viewLifecycleOwner, Observer<List<Song>> { songs ->
             songAdapter.submitList(songs)
         })
 
@@ -74,7 +73,7 @@ class SongListFragment : BaseFragment<FragmentSongListBinding>(){
 
     fun playSongDirectly() {
         Handler().postDelayed({
-            clickSong(songListViewModel.songs.value?.getOrNull(0) ?: return@postDelayed)
+            clickSong(episodeViewModel.songs.value?.getOrNull(0) ?: return@postDelayed)
         }, 2000)
     }
 
@@ -103,11 +102,11 @@ class SongListFragment : BaseFragment<FragmentSongListBinding>(){
     }
 
     private fun showSongs() {
-        songListViewModel.loadSongs()
+        episodeViewModel.loadSongs()
     }
 
     private fun clickSong(song: Song) {
-        songListViewModel.playMedia(song)
+//        songListViewModel.playMedia(song)
         showNowPlaying()
     }
 
@@ -115,11 +114,11 @@ class SongListFragment : BaseFragment<FragmentSongListBinding>(){
         with(parentFragmentManager.beginTransaction()) {
             val fragment = parentFragmentManager.findFragmentByTag(NowPlayingFragment.TAG)
             if (fragment == null) {
-                add(
-                    R.id.nav_host_fragment,
-                    NowPlayingFragment.newInstance(),
-                    NowPlayingFragment.TAG
-                )
+//                add(
+//                    R.id.nav_host_fragment,
+//                    NowPlayingFragment.newInstance(),
+//                    NowPlayingFragment.TAG
+//                )
                 commit()
             }
         }

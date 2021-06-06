@@ -2,6 +2,7 @@ package com.joe.podcastplayer.service.ui.song
 
 import android.content.ContentResolver
 import android.database.ContentObserver
+import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.*
@@ -9,11 +10,12 @@ import com.joe.podcastplayer.service.data.Song
 import com.joe.podcastplayer.service.extension.*
 import com.joe.podcastplayer.service.media.MusicServiceConnection
 import com.joe.podcastplayer.service.repository.SongListRepository
+import com.prof.rssparser.FeedItem
 import kotlinx.coroutines.launch
 
 private const val TAG = "SongListViewModel"
 
-class SongListViewModel(
+class EpisodeViewModel(
     private val contentResolver: ContentResolver,
     private val songListRepository: SongListRepository,
     private val musicServiceConnection: MusicServiceConnection
@@ -37,13 +39,13 @@ class SongListViewModel(
         }
     }
 
-    fun playMedia(mediaItem: Song, pauseAllowed: Boolean = true) {
-        Log.e("HAHA", "playMedia")
+    fun playMedia(feedItem: FeedItem, pauseAllowed: Boolean = true) {
+        Log.e("HAHA", "playMedia:$feedItem")
         val nowPlaying = musicServiceConnection.nowPlaying.value
         val transportControls = musicServiceConnection.transportControls
 
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
-        if (isPrepared && mediaItem.id.toString() == nowPlaying?.id) {
+        if (isPrepared && feedItem.audio.toString() == nowPlaying?.mediaUri.toString()) {
             musicServiceConnection.playbackState.value?.let { playbackState ->
                 when {
                     playbackState.isPlaying ->
@@ -52,23 +54,23 @@ class SongListViewModel(
                     else -> {
                         Log.w(
                             TAG, "Playable item clicked but neither play nor pause are enabled!" +
-                                    " (mediaId=${mediaItem.id.toString()})"
+                                    " (mediaId=${feedItem.audio.toString()})"
                         )
                     }
                 }
             }
         } else {
-            Log.e("HAHA", "playMedia playFromMediaId")
-            transportControls.playFromMediaId(mediaItem.id.toString(), null)
+            Log.e("HAHA", "playMedia playFromUri $feedItem.audio")
+            transportControls.playFromUri(Uri.parse(feedItem.audio), null)
         }
     }
 
-    fun playMediaId(mediaId: String) {
+    fun playMediaId(mediaLink: String) {
         val nowPlaying = musicServiceConnection.nowPlaying.value
         val transportControls = musicServiceConnection.transportControls
 
         val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
-        if (isPrepared && mediaId == nowPlaying?.id) {
+        if (isPrepared && mediaLink == nowPlaying?.mediaUri.toString()) {
             musicServiceConnection.playbackState.value?.let { playbackState ->
                 when {
                     playbackState.isPlaying -> transportControls.pause()
@@ -76,13 +78,13 @@ class SongListViewModel(
                     else -> {
                         Log.w(
                             TAG, "Playable item clicked but neither play nor pause are enabled!" +
-                                    " (mediaId=$mediaId)"
+                                    " (mediaId=$mediaLink)"
                         )
                     }
                 }
             }
         } else {
-            transportControls.playFromMediaId(mediaId, null)
+            transportControls.playFromUri(Uri.parse(mediaLink), null)
         }
     }
 
@@ -103,7 +105,7 @@ class SongListViewModel(
 
         @Suppress("unchecked_cast")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return SongListViewModel(
+            return EpisodeViewModel(
                 contentResolver,
                 songListRepository,
                 musicServiceConnection
