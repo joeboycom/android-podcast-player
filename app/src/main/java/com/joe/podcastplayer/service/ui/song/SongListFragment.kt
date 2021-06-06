@@ -102,7 +102,7 @@ class SongListFragment : BaseFragment<FragmentSongListBinding>(){
     }
 
     private fun showSongs() {
-        episodeViewModel.loadSongs()
+//        episodeViewModel.loadSongs()
     }
 
     private fun clickSong(song: Song) {

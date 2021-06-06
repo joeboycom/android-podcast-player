@@ -19,9 +19,7 @@ import androidx.media.MediaBrowserServiceCompat
 import com.joe.podcastplayer.service.di.InjectorUtils
 import com.joe.podcastplayer.service.extension.id
 import com.joe.podcastplayer.service.extension.isPlaying
-import com.joe.podcastplayer.service.extension.toMediaMetadataCompat
 import com.joe.podcastplayer.service.extension.toMediaSource
-import com.joe.podcastplayer.service.repository.SongListRepository
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -31,6 +29,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.joe.podcastplayer.BuildConfig
 import com.joe.podcastplayer.R
+import com.joe.podcastplayer.service.extension.toMediaMetadataCompat
+import com.prof.rssparser.FeedItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -41,7 +41,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
     private val TAG = MusicService::class.java.simpleName
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
-    private lateinit var songListRepository: SongListRepository
+    private lateinit var feedSessionList: ArrayList<FeedItem>
     private lateinit var notificationManager: MusicNotificationManager
 
     private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
@@ -70,6 +70,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
 
     override fun onCreate() {
         super.onCreate()
+        Log.e("HAHA_MusicService", "onCreate")
         val sessionActivityPendingIntent =
             packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
                 PendingIntent.getActivity(this, 0, sessionIntent, 0)
@@ -83,7 +84,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
 
         sessionToken = mediaSession.sessionToken
 
-        songListRepository = InjectorUtils.provideSongListRepository(this)
+        feedSessionList = InjectorUtils.provideSongListRepository(this)
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlaybackPreparer(MusicPlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator(mediaSession))
@@ -100,6 +101,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.e("HAHA_MusicService", "onStartCommand")
         handleIntent(intent)
         return Service.START_NOT_STICKY
     }
@@ -176,19 +178,19 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
                     PlaybackStateCompat.ACTION_PREPARE_FROM_SEARCH or
                     PlaybackStateCompat.ACTION_PLAY_FROM_URI
 
-        override fun onPrepareFromMediaId(
-            mediaId: String, playWhenReady: Boolean,
-            extras: Bundle?
-        ) {
+        override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) {
+        }
+
+        override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
             launch {
-                val itemToPlay = songListRepository.getSongs().find { item ->
-                    item.id.toString() == mediaId
+                val itemToPlay = feedSessionList.find { item ->
+                    item.audio.toString() == uri.toString()
                 }?.toMediaMetadataCompat()
 
-                val playlist = songListRepository.getSongs().toMediaMetadataCompat()
+                val playlist = feedSessionList.toMediaMetadataCompat()
 
                 if (itemToPlay == null) {
-                    Log.w(TAG, "Content not found: MediaID=$mediaId")
+                    Log.w(TAG, "Content not found: uri=$uri.toString()")
                 } else {
                     preparePlaylist(
                         playlist,
@@ -199,8 +201,6 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
                 }
             }
         }
-
-        override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) = Unit
 
         override fun onPrepare(playWhenReady: Boolean) = Unit
     }

@@ -8,32 +8,24 @@ import com.joe.podcastplayer.databinding.HomeFragmentBinding
 import com.joe.podcastplayer.extension.setVisibility
 import com.joe.podcastplayer.extension.toJson
 import com.prof.rssparser.Feed
-import com.prof.rssparser.Parser
+import com.prof.rssparser.FeedItem
 
 class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
     companion object {
         private const val BUNDLE_PODCAST_RSS_URL = "BUNDLE_PODCAST_RSS_URL"
-//        private const val BUNDLE_IMAGE_URL = "BUNDLE_IMAGE_URL"
-//        private const val BUNDLE_DESCRIPTION = "BUNDLE_DESCRIPTION"
         fun newInstance(podcastRssUrl: String): HomeFragment = HomeFragment().apply {
             val bundle = Bundle()
             bundle.putString(BUNDLE_PODCAST_RSS_URL, podcastRssUrl)
-//            bundle.putString(BUNDLE_IMAGE_URL, imageUrl)
-//            bundle.putString(BUNDLE_DESCRIPTION, description)
-//    channelText: String, imageUrl: String, description: String
             arguments = bundle
         }
     }
 
     private lateinit var adapter: ArticleAdapter
-    private lateinit var parser: Parser
     private lateinit var viewModel: HomeViewModel
-    private var requestRefreshFromFirstIn = true
     private var podcastRssUrl = ""
-    private var imageUrl = ""
-    private var description = ""
     private var title: String? = null
+    private var feedItems: ArrayList<FeedItem> = ArrayList()
 
     override fun enableEventBus(): Boolean = true
 
@@ -48,8 +40,6 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     override fun initIntent() {
         val bundle = arguments
         podcastRssUrl = bundle!!.getString(BUNDLE_PODCAST_RSS_URL, "")
-//        imageUrl = bundle.getString(BUNDLE_IMAGE_URL, "")
-//        description = bundle.getString(BUNDLE_DESCRIPTION, "")
     }
 
     override fun init() {
@@ -62,13 +52,6 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         viewBinding.recyclerView.useVerticalLayoutManager()
         viewBinding.recyclerView.setHasFixedSize(true)
 
-//        viewModel.snackbar.observe(this, { value ->
-//            value?.let {
-//                Snackbar.make(rootLayout, value, Snackbar.LENGTH_LONG).show()
-//                viewModel.onSnackbarShowed()
-//            }
-//        })
-
         viewBinding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark)
         viewBinding.swipeRefresh.canChildScrollUp()
         viewBinding.swipeRefresh.setOnRefreshListener {
@@ -78,26 +61,12 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
             viewModel.fetchFeed()
         }
 
-//        if (!isOnline()) {
-//            val builder = AlertDialog.Builder(this)
-//            builder.setMessage(R.string.alert_message)
-//                .setTitle(R.string.alert_title)
-//                .setCancelable(false)
-//                .setPositiveButton(R.string.alert_positive
-//                ) { _, _ -> finish() }
-//
-//            val alert = builder.create()
-//            alert.show()
-//        } else if (isOnline()) {
-//            viewModel.fetchFeed()
-//        }
-
         viewModel.fetchForUrlAndParseRawData(MainActivity.PODCAST_RSS_URL)
     }
 
     override fun initAction() {
         adapter.setOnClickListener {
-            val fragment = EpisodeFragment.newInstance(title, it.toJson())
+            val fragment = EpisodeFragment.newInstance(title, it.toJson(), feedItems.toJson())
             (activity as MainActivity?)?.showFragment(fragment, TransitionEffect.SLIDE)
         }
     }
@@ -113,6 +82,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
             title = channel.title
         }
 
+        feedItems = channel.articles
         imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
         adapter.articles = channel.articles
         viewBinding.recyclerView.adapter = adapter

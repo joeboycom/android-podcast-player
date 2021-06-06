@@ -1,43 +1,22 @@
 package com.joe.podcastplayer.service.ui.song
 
-import android.content.ContentResolver
-import android.database.ContentObserver
 import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.service.data.Song
 import com.joe.podcastplayer.service.extension.*
 import com.joe.podcastplayer.service.media.MusicServiceConnection
-import com.joe.podcastplayer.service.repository.SongListRepository
 import com.prof.rssparser.FeedItem
-import kotlinx.coroutines.launch
 
 private const val TAG = "SongListViewModel"
 
-class EpisodeViewModel(
-    private val contentResolver: ContentResolver,
-    private val songListRepository: SongListRepository,
-    private val musicServiceConnection: MusicServiceConnection
-) : ViewModel() {
+class EpisodeViewModel(private val musicServiceConnection: MusicServiceConnection) : ViewModel() {
 
-    private var contentObserver: ContentObserver? = null
     private val _songs = MutableLiveData<List<Song>>()
     val songs: LiveData<List<Song>> get() = _songs
-
-    fun loadSongs() {
-        viewModelScope.launch {
-            val songList = querySongs()
-            _songs.postValue(songList)
-            if (contentObserver == null) {
-                contentObserver = contentResolver.registerObserver(
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-                ) {
-                    loadSongs()
-                }
-            }
-        }
-    }
 
     fun playMedia(feedItem: FeedItem?, pauseAllowed: Boolean = true) {
         Log.e("HAHA", "playMedia:$feedItem")
@@ -91,28 +70,13 @@ class EpisodeViewModel(
         }
     }
 
-    private suspend fun querySongs(): List<Song> =
-        songListRepository.getSongs()
+    override fun onCleared() {}
 
-    override fun onCleared() {
-        contentObserver?.let {
-            contentResolver.unregisterContentObserver(it)
-        }
-    }
-
-    class Factory(
-        private val contentResolver: ContentResolver,
-        private val songListRepository: SongListRepository,
-        private val musicServiceConnection: MusicServiceConnection
-    ) : ViewModelProvider.NewInstanceFactory() {
+    class Factory(private val musicServiceConnection: MusicServiceConnection) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("unchecked_cast")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return EpisodeViewModel(
-                contentResolver,
-                songListRepository,
-                musicServiceConnection
-            ) as T
+            return EpisodeViewModel(musicServiceConnection) as T
         }
     }
 }

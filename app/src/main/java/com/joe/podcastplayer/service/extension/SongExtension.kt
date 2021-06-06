@@ -18,8 +18,9 @@ fun FeedItem.toMediaMetadataCompat(): MediaMetadataCompat =
         it.displayIconUri = image
     }.build()
 
-//fun List<FeedItem>.toMediaMetadataCompat(): List<MediaMetadataCompat> =
-//    this.map { it.toMediaMetadataCompat() }
+@JvmName("toMediaMetadataCompatFeedItem")
+fun List<FeedItem>.toMediaMetadataCompat(): List<MediaMetadataCompat> =
+    this.map { it.toMediaMetadataCompat() }
 
 fun Song.toMediaMetadataCompat(): MediaMetadataCompat =
     MediaMetadataCompat.Builder().also {

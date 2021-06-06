@@ -1,10 +1,12 @@
 package com.joe.podcastplayer
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import com.google.gson.reflect.TypeToken
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.EpisodeFragmentBinding
 import com.joe.podcastplayer.extension.className
@@ -21,10 +23,12 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     companion object {
         private const val BUNDLE_CHANNEL_TITLE = "BUNDLE_CHANNEL_TITLE"
         private const val BUNDLE_FEED_ITEM = "BUNDLE_FEED_ITEM"
-        fun newInstance(channelTitle: String?, feedItem: String?): EpisodeFragment = EpisodeFragment().apply {
+        private const val BUNDLE_FEED_ITEM_LISE = "BUNDLE_FEED_ITEM_LISE"
+        fun newInstance(channelTitle: String?, feedItem: String?, feedItemList: String?): EpisodeFragment = EpisodeFragment().apply {
             val bundle = Bundle()
             bundle.putString(BUNDLE_CHANNEL_TITLE, channelTitle)
             bundle.putString(BUNDLE_FEED_ITEM, feedItem)
+            bundle.putString(BUNDLE_FEED_ITEM_LISE, feedItemList)
             arguments = bundle
         }
     }
@@ -35,6 +39,7 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     private val handler = Handler()
     private var channelTitle = ""
     private var feedItem: FeedItem? = null
+    private var feedItemList: ArrayList<FeedItem>? = null
 
     override fun enableEventBus(): Boolean = false
 
@@ -50,11 +55,14 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
         val bundle = arguments
         channelTitle = bundle!!.getString(BUNDLE_CHANNEL_TITLE, "")
         feedItem = gson.fromJson(bundle.getString(BUNDLE_FEED_ITEM, ""), FeedItem::class.java)
+        feedItemList = gson.fromJson(bundle.getString(BUNDLE_FEED_ITEM_LISE), object : TypeToken<ArrayList<FeedItem>>() {}.type)
         Log.e(className, "feedItem:$feedItem")
     }
 
     override fun init() {
-
+        val pref = baseActivity!!.getSharedPreferences("podcast_player", Context.MODE_PRIVATE)
+        val editor = pref.edit()
+        editor.putString("pref_feed_item_list", feedItemList?.toJson()).apply()
     }
 
     override fun initLayout() {
