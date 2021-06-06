@@ -2,6 +2,7 @@ package com.joe.podcastplayer
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.HomeFragmentBinding
@@ -21,11 +22,11 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         }
     }
 
-    private lateinit var adapter: ArticleAdapter
+    private lateinit var adapter: EpisodeAdapter
     private lateinit var viewModel: HomeViewModel
+    private var feedItems: ArrayList<FeedItem> = ArrayList()
     private var podcastRssUrl = ""
     private var title: String? = null
-    private var feedItems: ArrayList<FeedItem> = ArrayList()
 
     override fun enableEventBus(): Boolean = true
 
@@ -44,21 +45,20 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
     override fun init() {
         viewModel = ViewModelProvider(baseActivity!!, viewModelFactory).get(HomeViewModel::class.java)
-        adapter = ArticleAdapter()
+        adapter = EpisodeAdapter()
     }
 
     override fun initLayout() {
-        viewBinding.recyclerView.setSpacing(0, 0, 8, 0, 12, 12, 12, 12)
+        viewBinding.recyclerView.setSpacing(12, 12, 8, 0, 12, 12, 12, 12)
         viewBinding.recyclerView.useVerticalLayoutManager()
         viewBinding.recyclerView.setHasFixedSize(true)
 
         viewBinding.swipeRefresh.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark)
         viewBinding.swipeRefresh.canChildScrollUp()
         viewBinding.swipeRefresh.setOnRefreshListener {
-            adapter.articles?.clear()
             adapter.notifyDataSetChanged()
             viewBinding.swipeRefresh.isRefreshing = true
-            viewModel.fetchFeed()
+            viewModel.fetchForUrlAndParseRawData(MainActivity.PODCAST_RSS_URL)
         }
 
         viewModel.fetchForUrlAndParseRawData(MainActivity.PODCAST_RSS_URL)
@@ -72,8 +72,11 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     }
 
     override fun initObserver() {
-        viewModel.rssChannel.observe(this, { channel ->
+        viewModel.rssSuccessLiveData.observe(this, { channel ->
             processChannelData(channel)
+        })
+        viewModel.rssFailLiveData.observe(this, { text ->
+            Toast.makeText(baseActivity, text, Toast.LENGTH_SHORT).show()
         })
     }
 
@@ -84,7 +87,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
         feedItems = channel.articles
         imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
-        adapter.articles = channel.articles
+        adapter.feedItemList = channel.articles
         viewBinding.recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
         viewBinding.progLoading.setVisibility(false)

@@ -31,7 +31,6 @@ import okhttp3.Request
 class HomeViewModel : BaseViewModel() {
 
     private val url = "https://feeds.soundcloud.com/users/soundcloud:users:322164009/sounds.rss"
-    private lateinit var articleListLive: MutableLiveData<Feed>
     private var parser: Parser = Parser.Builder()
         .context(PodcastPlayerApplication.application)
         // If you want to provide a custom charset (the default is utf-8):
@@ -39,31 +38,27 @@ class HomeViewModel : BaseViewModel() {
         .cacheExpirationMillis(24L * 60L * 60L * 100L) // one day
         .build()
 
-    private val _snackbar = MutableLiveData<String>()
-    val snackbar: LiveData<String>
-        get() = _snackbar
+    private val rssFailMutableLiveData = MutableLiveData<String>()
+    val rssFailLiveData: LiveData<String>
+        get() = rssFailMutableLiveData
 
-    private val _rssChannel = MutableLiveData<Feed>()
-    val rssChannel: LiveData<Feed>
-        get() = _rssChannel
+    private val rssSuccessMutableLiveData = MutableLiveData<Feed>()
+    val rssSuccessLiveData: LiveData<Feed>
+        get() = rssSuccessMutableLiveData
 
     private val okHttpClient by lazy {
         OkHttpClient()
-    }
-
-    fun onSnackbarShowed() {
-        _snackbar.value = null
     }
 
     fun fetchFeed() {
         viewModelScope.launch {
             try {
                 val channel = parser.getChannel(url)
-                _rssChannel.postValue(channel)
+                rssSuccessMutableLiveData.postValue(channel)
             } catch (e: Exception) {
                 e.printStackTrace()
-                _snackbar.value = "An error has occurred. Please retry"
-                _rssChannel.postValue(Feed(null, null, null, null, null, null, arrayListOf()))
+                rssFailMutableLiveData.value = "An error has occurred. Please retry"
+                rssSuccessMutableLiveData.postValue(Feed(null, null, null, null, null, null, arrayListOf()))
             }
         }
     }
@@ -72,16 +67,14 @@ class HomeViewModel : BaseViewModel() {
         val parser = Parser.Builder().build()
 
         viewModelScope.launch(Dispatchers.IO) {
-            val request = Request.Builder()
-                .url(url)
-                .build()
+            val request = Request.Builder().url(url).build()
             val result = okHttpClient.newCall(request).execute()
             val raw = runCatching { result.body()?.string() }.getOrNull()
             if (raw == null) {
-                _snackbar.postValue("Something went wrong!")
+                rssFailMutableLiveData.postValue("Something went wrong!")
             } else {
                 val channel = parser.parse(raw)
-                _rssChannel.postValue(channel)
+                rssSuccessMutableLiveData.postValue(channel)
             }
         }
     }

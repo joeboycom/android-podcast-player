@@ -17,6 +17,7 @@
 
 package com.prof.rssparser
 
+import androidx.recyclerview.widget.DiffUtil
 import java.io.Serializable
 
 data class FeedItem(
@@ -32,7 +33,6 @@ data class FeedItem(
     var video: String? = null,
     var sourceName: String? = null,
     var sourceUrl: String? = null,
-//    var media: FeedMedia? = null,
     private var _categories: MutableList<String> = mutableListOf()
 ): Serializable {
 
@@ -41,5 +41,15 @@ data class FeedItem(
 
     fun addCategory(category: String) {
         _categories.add(category)
+    }
+
+    companion object {
+        val DiffCallback = object : DiffUtil.ItemCallback<FeedItem>() {
+            override fun areItemsTheSame(oldItem: FeedItem, newItem: FeedItem) =
+                oldItem.guid == newItem.guid
+
+            override fun areContentsTheSame(oldItem: FeedItem, newItem: FeedItem) =
+                oldItem == newItem
+        }
     }
 }
