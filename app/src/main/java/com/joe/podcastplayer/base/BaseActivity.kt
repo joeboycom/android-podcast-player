@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.viewbinding.ViewBinding
 import com.joe.podcastplayer.ImageLoader
-import com.joe.podcastplayer.mvvm.viewModel.component.ViewModelFactory
+import com.joe.podcastplayer.viewModel.component.ViewModelFactory
 import com.trello.rxlifecycle4.android.lifecycle.kotlin.bindUntilEvent
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable

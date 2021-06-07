@@ -1,15 +1,17 @@
-package com.joe.podcastplayer
+package com.joe.podcastplayer.fragment
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.joe.podcastplayer.*
+import com.joe.podcastplayer.activity.MainActivity
+import com.joe.podcastplayer.adpter.EpisodeAdapter
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.HomeFragmentBinding
-import com.joe.podcastplayer.extension.onClick
-import com.joe.podcastplayer.extension.setVisibility
-import com.joe.podcastplayer.extension.toJson
+import com.joe.podcastplayer.extension.*
+import com.joe.podcastplayer.viewModel.HomeViewModel
 import com.prof.rssparser.Feed
 import com.prof.rssparser.FeedItem
 

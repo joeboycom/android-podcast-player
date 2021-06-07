@@ -1,6 +1,7 @@
-package com.joe.podcastplayer
+package com.joe.podcastplayer.viewModel
 
 import android.view.ViewGroup
+import com.joe.podcastplayer.R
 import com.joe.podcastplayer.base.BaseViewHolder
 import com.joe.podcastplayer.databinding.HolderItemEpisodeBinding
 import com.joe.podcastplayer.extension.onClick

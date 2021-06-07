@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.provider.Settings
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.joe.podcastplayer.PodcastPlayerApplication

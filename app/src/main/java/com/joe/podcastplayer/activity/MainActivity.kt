@@ -1,9 +1,12 @@
-package com.joe.podcastplayer
+package com.joe.podcastplayer.activity
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import com.joe.podcastplayer.R
+import com.joe.podcastplayer.TransitionEffect
 import com.joe.podcastplayer.base.BaseActivity
 import com.joe.podcastplayer.databinding.ActivityMainBinding
+import com.joe.podcastplayer.fragment.HomeFragment
 import org.apache.commons.lang3.Validate
 
 class MainActivity : BaseActivity<ActivityMainBinding>() {

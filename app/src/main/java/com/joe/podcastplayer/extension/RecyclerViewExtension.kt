@@ -1,4 +1,4 @@
-package com.joe.podcastplayer
+package com.joe.podcastplayer.extension
 
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager

@@ -6,8 +6,8 @@ import com.google.gson.reflect.TypeToken
 import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.service.media.MusicService
 import com.joe.podcastplayer.service.media.MusicServiceConnection
-import com.joe.podcastplayer.service.ui.nowplaying.NowPlayingViewModel
-import com.joe.podcastplayer.service.ui.song.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.NowPlayingViewModel
 import com.prof.rssparser.FeedItem
 
 /**
@@ -22,12 +22,12 @@ object InjectorUtils {
         )
     }
 
-    fun provideSongListRepository(context: Context): ArrayList<FeedItem> {
+    fun provideFeedItemListRepository(context: Context): ArrayList<FeedItem> {
         val pref = context.getSharedPreferences("podcast_player", Context.MODE_PRIVATE)
         return gson.fromJson(pref.getString("pref_feed_item_list", ""), object : TypeToken<ArrayList<FeedItem>>() {}.type)
     }
 
-    fun provideSongListViewModel(context: Context): EpisodeViewModel.Factory {
+    fun provideFeedItemListViewModel(context: Context): EpisodeViewModel.Factory {
         val musicServiceConnection = provideMusicServiceConnection(context)
         return EpisodeViewModel.Factory(musicServiceConnection)
     }

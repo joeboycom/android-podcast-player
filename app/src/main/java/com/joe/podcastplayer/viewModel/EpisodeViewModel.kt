@@ -1,22 +1,16 @@
-package com.joe.podcastplayer.service.ui.song
+package com.joe.podcastplayer.viewModel
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.joe.podcastplayer.service.data.Song
-import com.joe.podcastplayer.service.extension.*
+import com.joe.podcastplayer.extension.*
 import com.joe.podcastplayer.service.media.MusicServiceConnection
 import com.prof.rssparser.FeedItem
 
-private const val TAG = "SongListViewModel"
+private const val TAG = "EpisodeViewModel"
 
 class EpisodeViewModel(private val musicServiceConnection: MusicServiceConnection) : ViewModel() {
-
-    private val _songs = MutableLiveData<List<Song>>()
-    val songs: LiveData<List<Song>> get() = _songs
 
     fun playMedia(feedItem: FeedItem?, pauseAllowed: Boolean = true) {
         Log.e("HAHA", "playMedia:$feedItem")
@@ -44,29 +38,6 @@ class EpisodeViewModel(private val musicServiceConnection: MusicServiceConnectio
         } else {
             Log.e("HAHA", "playMedia playFromUri $feedItem.audio")
             transportControls.playFromUri(Uri.parse(feedItem.audio), null)
-        }
-    }
-
-    fun playMediaId(mediaLink: String) {
-        val nowPlaying = musicServiceConnection.nowPlaying.value
-        val transportControls = musicServiceConnection.transportControls
-
-        val isPrepared = musicServiceConnection.playbackState.value?.isPrepared ?: false
-        if (isPrepared && mediaLink == nowPlaying?.mediaUri.toString()) {
-            musicServiceConnection.playbackState.value?.let { playbackState ->
-                when {
-                    playbackState.isPlaying -> transportControls.pause()
-                    playbackState.isPlayEnabled -> transportControls.play()
-                    else -> {
-                        Log.w(
-                            TAG, "Playable item clicked but neither play nor pause are enabled!" +
-                                    " (mediaId=$mediaLink)"
-                        )
-                    }
-                }
-            }
-        } else {
-            transportControls.playFromUri(Uri.parse(mediaLink), null)
         }
     }
 

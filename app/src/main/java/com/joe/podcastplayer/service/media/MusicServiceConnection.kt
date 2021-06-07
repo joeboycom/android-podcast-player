@@ -10,7 +10,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.joe.podcastplayer.extension.className
-import com.joe.podcastplayer.service.extension.*
+import com.joe.podcastplayer.extension.*
 
 private const val TAG = "HAHAHAHA"
 

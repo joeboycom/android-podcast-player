@@ -15,10 +15,11 @@
  *
  */
 
-package com.joe.podcastplayer
+package com.joe.podcastplayer.adpter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
+import com.joe.podcastplayer.viewModel.EpisodeItemViewHolder
 import com.prof.rssparser.FeedItem
 
 class EpisodeAdapter : ListAdapter<FeedItem, EpisodeItemViewHolder>(FeedItem.DiffCallback) {

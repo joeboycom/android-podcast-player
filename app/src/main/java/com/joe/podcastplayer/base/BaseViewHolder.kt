@@ -1,17 +1,13 @@
 package com.joe.podcastplayer.base
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.joe.podcastplayer.ImageLoader
 import com.joe.podcastplayer.extension.activity
 import com.joe.podcastplayer.extension.baseActivity
 import com.joe.podcastplayer.extension.layoutInflater
-import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 
 interface ICoreViewHolder {
     val currentPosition: Int?

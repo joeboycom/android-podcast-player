@@ -1,25 +1,9 @@
 <resources>
     <string name="app_name">PodcastPlayer</string>
-    <string name="action_about">About</string>
-    <string name="alert_title">Attention!</string>
-    <string name="alert_message">Unable to load data. \nCheck your connection!</string>
-    <string name="alert_positive">Close</string>
     <string name="video">Video</string>
     <string name="info_text">This is a simple app that shows the use of RSS Parse library.
          &lt;br /&gt;&lt;br /&gt;You can find the source code on </string>
     <string name="author">&lt;br /&gt;&lt;br /&gt;Written by Marco Gomiero</string>
-    <string name="action_raw_parser">Parse raw data from URL</string>
-    <string name="alert_raw_parser_title">Add an RSS feed url</string>
-    <string name="alert_raw_parser_positive">Ok</string>
-    <string name="alert_raw_parser_negative">Cancel</string>
-
-    // audio player
-    <string name="rewind_label">Rewind</string>
-    <string name="fast_forward_label">Fast forward</string>
-    <string name="skip_episode_label">Skip episode</string>
-    <string name="play_label">Play</string>
-    <string name="pause_label">Pause</string>
-    <string name="position_default_label" translatable="false">00:00:00</string>
 
     <!-- Notificaiton Channel -->
     <string name="notification_channel">Now Playing</string>
@@ -34,23 +18,6 @@
     <!-- Error messages -->
     <string name="error_media_not_found">Could not locate requested media.</string>
     <string name="generic_error">The application has encountered an unexpected error.</string>
-    <!-- Allowed caller template -->
-    <string name="allowed_caller_log">
-        Caller has a valid certificate, but its package doesn\'t match any expected package for the
-        given certificate. To allow this caller, add the following to the allowed callers list:\n
-        <![CDATA[
-        <signature name=\"%1$s\" package=\"%2$s\">\n\t<key>%3$s</key>\n</signature>\n
-        ]]>
-    </string>
-
-    <!-- Cast menu item -->
-    <string name="media_route_menu_title">Cast</string>
-
-    <!-- Browse Tree -->
-    <string name="recommended_title">Recommended</string>
-    <string name="albums_title">Albums</string>
-
-    <string name="song_list_fragment">SongList Fragment</string>
 
     <string name="cover">cover</string>
     <string name="description_expand">description_expand</string>

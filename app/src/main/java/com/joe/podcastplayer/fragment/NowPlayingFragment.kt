@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.service.ui.nowplaying
+package com.joe.podcastplayer.fragment
 
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -24,8 +24,9 @@ import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.NowPlayingFragmentBinding
 import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.service.di.InjectorUtils
-import com.joe.podcastplayer.service.ui.nowplaying.NowPlayingViewModel.NowPlayingMetadata.Companion.timestampToMSS
-import com.joe.podcastplayer.service.ui.song.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.NowPlayingViewModel
+import com.joe.podcastplayer.viewModel.NowPlayingViewModel.NowPlayingMetadata.Companion.timestampToMSS
 import com.prof.rssparser.FeedItem
 
 
@@ -48,7 +49,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     private var feedItem: FeedItem? = null
 
     private val episodeViewModel: EpisodeViewModel by viewModels {
-        InjectorUtils.provideSongListViewModel(requireContext())
+        InjectorUtils.provideFeedItemListViewModel(requireContext())
     }
 
     private val nowPlayingViewModel: NowPlayingViewModel by viewModels {

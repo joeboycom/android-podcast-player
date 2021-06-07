@@ -15,11 +15,12 @@
  *
  */
 
-package com.joe.podcastplayer
+package com.joe.podcastplayer.viewModel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.joe.podcastplayer.PodcastPlayerApplication
 import com.joe.podcastplayer.base.BaseViewModel
 import com.prof.rssparser.Feed
 import com.prof.rssparser.Parser

@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.service.extension
+package com.joe.podcastplayer.extension
 
 import android.os.SystemClock
 import android.support.v4.media.session.PlaybackStateCompat

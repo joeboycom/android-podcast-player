@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.service.extension
+package com.joe.podcastplayer.extension
 
 import android.graphics.Bitmap
 import android.graphics.Canvas

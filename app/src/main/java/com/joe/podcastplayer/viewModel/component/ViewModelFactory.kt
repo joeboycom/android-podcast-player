@@ -1,8 +1,8 @@
-package com.joe.podcastplayer.mvvm.viewModel.component
+package com.joe.podcastplayer.viewModel.component
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.joe.podcastplayer.HomeViewModel
+import com.joe.podcastplayer.viewModel.HomeViewModel
 
 class ViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

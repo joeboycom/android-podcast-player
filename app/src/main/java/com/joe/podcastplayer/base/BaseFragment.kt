@@ -11,7 +11,7 @@ import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.joe.podcastplayer.ImageLoader
-import com.joe.podcastplayer.mvvm.viewModel.component.ViewModelFactory
+import com.joe.podcastplayer.viewModel.component.ViewModelFactory
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import java.lang.reflect.Method
 import java.lang.reflect.ParameterizedType

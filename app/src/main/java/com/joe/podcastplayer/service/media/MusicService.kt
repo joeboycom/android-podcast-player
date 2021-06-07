@@ -17,9 +17,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.joe.podcastplayer.service.di.InjectorUtils
-import com.joe.podcastplayer.service.extension.id
-import com.joe.podcastplayer.service.extension.isPlaying
-import com.joe.podcastplayer.service.extension.toMediaSource
+import com.joe.podcastplayer.extension.id
+import com.joe.podcastplayer.extension.isPlaying
+import com.joe.podcastplayer.extension.toMediaSource
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
@@ -29,7 +29,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.joe.podcastplayer.BuildConfig
 import com.joe.podcastplayer.R
-import com.joe.podcastplayer.service.extension.toMediaMetadataCompat
+import com.joe.podcastplayer.extension.toMediaMetadataCompat
 import com.prof.rssparser.FeedItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -84,7 +84,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
 
         sessionToken = mediaSession.sessionToken
 
-        feedSessionList = InjectorUtils.provideSongListRepository(this)
+        feedSessionList = InjectorUtils.provideFeedItemListRepository(this)
         mediaSessionConnector = MediaSessionConnector(mediaSession)
         mediaSessionConnector.setPlaybackPreparer(MusicPlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(MusicQueueNavigator(mediaSession))

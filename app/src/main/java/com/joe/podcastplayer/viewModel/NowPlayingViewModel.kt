@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.service.ui.nowplaying
+package com.joe.podcastplayer.viewModel
 
 import android.content.Context
 import android.net.Uri
@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.R
 import com.joe.podcastplayer.extension.className
-import com.joe.podcastplayer.service.extension.*
+import com.joe.podcastplayer.extension.*
 import com.joe.podcastplayer.service.media.EMPTY_PLAYBACK_STATE
 import com.joe.podcastplayer.service.media.MusicServiceConnection
 import com.joe.podcastplayer.service.media.NOTHING_PLAYING
