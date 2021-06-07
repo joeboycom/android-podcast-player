@@ -12,5 +12,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="blue_kkbox">#FF5ACCF2</color>
+    <color name="gray">#FFDDDDDD</color>
+    <color name="gray_google">#FF201F23</color>
+    <color name="gray_google_light">#FF2F2E33</color>
+
 
 </resources>

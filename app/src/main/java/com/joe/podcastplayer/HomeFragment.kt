@@ -1,15 +1,18 @@
 package com.joe.podcastplayer
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.HomeFragmentBinding
+import com.joe.podcastplayer.extension.onClick
 import com.joe.podcastplayer.extension.setVisibility
 import com.joe.podcastplayer.extension.toJson
 import com.prof.rssparser.Feed
 import com.prof.rssparser.FeedItem
+
 
 class HomeFragment : BaseFragment<HomeFragmentBinding>() {
 
@@ -27,6 +30,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     private var feedItems: ArrayList<FeedItem> = ArrayList()
     private var podcastRssUrl = ""
     private var title: String? = null
+    private var isDescriptionExpanded = false
 
     override fun enableEventBus(): Boolean = true
 
@@ -49,7 +53,9 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     }
 
     override fun initLayout() {
-        viewBinding.recyclerView.setSpacing(12, 12, 8, 0, 12, 12, 12, 12)
+        viewBinding.ivExpand.setBackgroundResource(R.drawable.ic_baseline_expand_more_24)
+
+        viewBinding.recyclerView.setSpacing(0, 12, 8, 0, 12, 12, 12, 12)
         viewBinding.recyclerView.useVerticalLayoutManager()
         viewBinding.recyclerView.setHasFixedSize(true)
 
@@ -65,6 +71,20 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     }
 
     override fun initAction() {
+        viewBinding.flExpand.onClick {
+            if (!isDescriptionExpanded) {
+                isDescriptionExpanded = true
+                val animation = ObjectAnimator.ofInt(viewBinding.tvChannelDescription, "maxLines", 40)
+                animation.setDuration(200).start()
+                viewBinding.ivExpand.setBackgroundResource(R.drawable.ic_baseline_expand_less_24)
+            } else {
+                isDescriptionExpanded = false
+                val animation = ObjectAnimator.ofInt(viewBinding.tvChannelDescription, "maxLines", 2)
+                animation.setDuration(200).start()
+                viewBinding.ivExpand.setBackgroundResource(R.drawable.ic_baseline_expand_more_24)
+            }
+        }
+
         adapter.setOnClickListener {
             val fragment = EpisodeFragment.newInstance(title, it.toJson(), feedItems.toJson())
             (activity as MainActivity?)?.showFragment(fragment, TransitionEffect.SLIDE)
@@ -81,16 +101,16 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
     }
 
     private fun processChannelData(channel: Feed) {
-        if (channel.title != null) {
-            title = channel.title
-        }
+        title = channel.title
 
         feedItems = channel.articles
-        imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
         adapter.feedItemList = channel.articles
-        viewBinding.recyclerView.adapter = adapter
         adapter.notifyDataSetChanged()
-        viewBinding.progLoading.setVisibility(false)
+        viewBinding.tvChannelTitle.text = title
+        viewBinding.tvChannelDescription.text = channel.description
+        viewBinding.recyclerView.adapter = adapter
+        viewBinding.loadingSpinner.setVisibility(false)
         viewBinding.swipeRefresh.isRefreshing = false
+        imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
     }
 }

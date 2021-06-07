@@ -53,6 +53,7 @@
     <string name="song_list_fragment">SongList Fragment</string>
 
     <string name="cover">cover</string>
+    <string name="description_expand">description_expand</string>
 
     <string name="duration_unknown">--:--</string>
     <string name="duration_format">%d:%02d</string>
