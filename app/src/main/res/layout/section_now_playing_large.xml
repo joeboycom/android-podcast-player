@@ -3,88 +3,80 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="32dp">
 
-    <ImageView
-        android:id="@+id/largeCover"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="70dp"
+    <TextView
+        android:id="@+id/tvChannelTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/gray"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:text="@tools:sample/lorem" />
+
+    <ImageView
+        android:id="@+id/largeCover"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/black"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvChannelTitle"
         tools:ignore="ContentDescription"
         tools:src="@tools:sample/avatars" />
 
-    <View
-        android:id="@+id/titleBackground"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="@id/largeSubTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/largeTitle" />
-
     <TextView
         android:id="@+id/largeTitle"
-        style="@style/Song.MainText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
+        android:gravity="start"
+        android:textColor="@color/white"
         android:textSize="20sp"
+        android:textStyle="bold"
+        android:maxLines="3"
+        android:lines="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/largeCover"
-        tools:text="@tools:sample/lorem" />
-
-    <TextView
-        android:id="@+id/largeSubTitle"
-        style="@style/Song.SecondaryText"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/largeTitle"
         tools:text="@tools:sample/lorem" />
 
     <SeekBar
         android:id="@+id/largeSeekBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="17dp"
-        android:layout_marginEnd="30dp"
-        app:layout_constraintEnd_toEndOf="@id/totalDuration"
-        app:layout_constraintStart_toStartOf="@id/nowDuration"
-        app:layout_constraintTop_toBottomOf="@id/largeSubTitle" />
+        android:layout_marginTop="16dp"
+        android:thumbTint="@color/white"
+        android:progressBackgroundTint="@color/white"
+        android:progressTint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/largeTitle" />
 
     <TextView
         android:id="@+id/nowDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="15dp"
+        android:textColor="@color/gray"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/largeSubTitle"
+        app:layout_constraintTop_toBottomOf="@id/largeSeekBar"
         tools:text="00:00" />
 
     <TextView
         android:id="@+id/totalDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="30dp"
+        android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/largeSubTitle"
+        app:layout_constraintTop_toBottomOf="@id/largeSeekBar"
         tools:text="05:00" />
 
     <ImageButton

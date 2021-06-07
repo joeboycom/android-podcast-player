@@ -109,8 +109,9 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         viewBinding.tvChannelTitle.text = title
         viewBinding.tvChannelDescription.text = channel.description
         viewBinding.recyclerView.adapter = adapter
-        viewBinding.loadingSpinner.setVisibility(false)
         viewBinding.swipeRefresh.isRefreshing = false
         imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
+        viewBinding.loadingSpinner.setVisibility(false)
+        viewBinding.ivExpand.setVisibility(true)
     }
 }

@@ -66,9 +66,9 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     }
 
     override fun initLayout() {
-        viewBinding.episodeChannelTextView.text = channelTitle
+        viewBinding.tvEpisodeChannel.text = channelTitle
         viewBinding.tvEpisodeTitle.text = feedItem?.title
-        viewBinding.episodeDescriptionTextView.text = feedItem?.description
+        viewBinding.tvEpisodeDescription.text = feedItem?.description
 
         imageLoader.load(feedItem?.image, viewBinding.ivHeaderImage)
     }
@@ -76,7 +76,7 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     override fun initAction() {
         viewBinding.playAppCompatButton.onClick {
             if (feedItem == null) return@onClick
-            val fragment = NowPlayingFragment.newInstance(feedItem!!.toJson())
+            val fragment = NowPlayingFragment.newInstance(channelTitle, feedItem!!.toJson())
             (activity as MainActivity?)!!.loadChildFragment(fragment, TransitionEffect.SLIDE)
 
             playPodcast(feedItem!!)

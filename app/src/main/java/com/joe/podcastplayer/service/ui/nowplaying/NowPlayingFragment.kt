@@ -13,7 +13,6 @@ import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -33,9 +32,11 @@ import com.prof.rssparser.FeedItem
 class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     companion object {
         const val TAG = "NowPlayingFragment"
+        private const val BUNDLE_CHANNEL_TITLE = "BUNDLE_CHANNEL_TITLE"
         private const val BUNDLE_FEED_ITEM = "BUNDLE_FEED_ITEM"
-        fun newInstance(feedItem: String?): NowPlayingFragment = NowPlayingFragment().apply {
+        fun newInstance(channelTitle: String?, feedItem: String?): NowPlayingFragment = NowPlayingFragment().apply {
             val bundle = Bundle()
+            bundle.putString(BUNDLE_CHANNEL_TITLE, channelTitle)
             bundle.putString(BUNDLE_FEED_ITEM, feedItem)
             arguments = bundle
         }
@@ -43,6 +44,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private var seekbarScrollingStart = false
+    private var channelTitle = ""
     private var feedItem: FeedItem? = null
 
     private val episodeViewModel: EpisodeViewModel by viewModels {
@@ -58,7 +60,8 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
 
     override fun initIntent() {
         val bundle = arguments
-        feedItem = gson.fromJson(bundle!!.getString(BUNDLE_FEED_ITEM, ""), FeedItem::class.java)
+        channelTitle = bundle!!.getString(BUNDLE_CHANNEL_TITLE, "")
+        feedItem = gson.fromJson(bundle.getString(BUNDLE_FEED_ITEM, ""), FeedItem::class.java)
     }
 
     override fun init() {
@@ -69,88 +72,25 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         setBottomSheetBehavior()
         disableSeekInSmallSeekBar()
 
-        viewBinding.largePlayer.largeSeekBar.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+        viewBinding.largePlayer.tvChannelTitle.text = channelTitle
+    }
+
+    override fun initAction() {
+        viewBinding.largePlayer.largeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                Log.e("HAHA", "onProgressChanged : $progress")
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                Log.e("HAHA", "onStartTrackingTouch")
                 seekbarScrollingStart = true
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                Log.e("HAHA", "onStopTrackingTouch $seekbarScrollingStart ${seekBar!!.progress} ${seekBar.max}")
                 if (seekbarScrollingStart) {
                     nowPlayingViewModel.changePlaybackPosition(seekBar!!.progress, seekBar.max)
                     seekbarScrollingStart = false
                 }
             }
         })
-
-        // Attach observers to the LiveData coming from this ViewModel
-        nowPlayingViewModel.mediaMetadata.observe(viewLifecycleOwner,
-            Observer { mediaItem -> updateUI(view, mediaItem) })
-
-        nowPlayingViewModel.mediaPlayProgress.observe(viewLifecycleOwner,
-            Observer { progress -> updateProgressBar(progress) })
-
-        nowPlayingViewModel.mediaPosition.observe(viewLifecycleOwner,
-            Observer { position -> viewBinding.largePlayer.nowDuration.text = timestampToMSS(requireContext(), position) })
-
-        nowPlayingViewModel.mediaButtonRes.observe(viewLifecycleOwner,
-            Observer {
-                viewBinding.smallPlayer.playPauseImage.setImageState(it, true)
-                viewBinding.largePlayer.largePlayPauseButton.setImageState(it, true)
-            })
-
-        nowPlayingViewModel.shuffleMode.observe(viewLifecycleOwner,
-            Observer {
-                when (it) {
-                    PlaybackStateCompat.SHUFFLE_MODE_NONE -> {
-                        viewBinding.largePlayer.shuffleButton.setColorFilter(Color.BLACK)
-                    }
-                    PlaybackStateCompat.SHUFFLE_MODE_ALL -> {
-                        viewBinding.largePlayer.shuffleButton.setColorFilter(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
-                }
-            }
-        )
-
-        nowPlayingViewModel.repeatMode.observe(viewLifecycleOwner,
-            Observer {
-                when (it) {
-                    PlaybackStateCompat.REPEAT_MODE_NONE -> {
-                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat)
-                        viewBinding.largePlayer.repeatButton.setColorFilter(Color.BLACK)
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat_one)
-                        viewBinding.largePlayer.repeatButton.setColorFilter(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ALL -> {
-                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat)
-                        viewBinding.largePlayer.repeatButton.setColorFilter(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
-                }
-            }
-        )
-
 
         viewBinding.smallPlayer.playPauseImage.setOnClickListener {
             nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(feedItem) }
@@ -178,12 +118,69 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         }
     }
 
-    override fun initAction() {
-
-    }
-
     override fun initObserver() {
+        // Attach observers to the LiveData coming from this ViewModel
+        nowPlayingViewModel.mediaMetadata.observe(viewLifecycleOwner,
+            { mediaItem -> updateUI(view, mediaItem) })
 
+        nowPlayingViewModel.mediaPlayProgress.observe(viewLifecycleOwner,
+            { progress -> updateProgressBar(progress) })
+
+        nowPlayingViewModel.mediaPosition.observe(viewLifecycleOwner,
+            { position -> viewBinding.largePlayer.nowDuration.text = timestampToMSS(requireContext(), position) })
+
+        nowPlayingViewModel.mediaButtonRes.observe(viewLifecycleOwner,
+            {
+                viewBinding.smallPlayer.playPauseImage.setImageState(it, true)
+                viewBinding.largePlayer.largePlayPauseButton.setImageState(it, true)
+            })
+
+        nowPlayingViewModel.shuffleMode.observe(viewLifecycleOwner,
+            {
+                when (it) {
+                    PlaybackStateCompat.SHUFFLE_MODE_NONE -> {
+                        viewBinding.largePlayer.shuffleButton.setColorFilter(Color.WHITE)
+                    }
+                    PlaybackStateCompat.SHUFFLE_MODE_ALL -> {
+                        viewBinding.largePlayer.shuffleButton.setColorFilter(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.colorPrimary
+                            )
+                        )
+                    }
+                }
+            }
+        )
+
+        nowPlayingViewModel.repeatMode.observe(viewLifecycleOwner,
+            {
+                when (it) {
+                    PlaybackStateCompat.REPEAT_MODE_NONE -> {
+                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat)
+                        viewBinding.largePlayer.repeatButton.setColorFilter(Color.WHITE)
+                    }
+                    PlaybackStateCompat.REPEAT_MODE_ONE -> {
+                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat_one)
+                        viewBinding.largePlayer.repeatButton.setColorFilter(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.colorPrimary
+                            )
+                        )
+                    }
+                    PlaybackStateCompat.REPEAT_MODE_ALL -> {
+                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat)
+                        viewBinding.largePlayer.repeatButton.setColorFilter(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.colorPrimary
+                            )
+                        )
+                    }
+                }
+            }
+        )
     }
 
     private fun setBottomSheetBehavior() {
@@ -231,15 +228,6 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
             viewBinding.largePlayer.largeCover.setImageResource(R.drawable.ic_default_cover_icon)
             viewBinding.largePlayer.largeCover.setBackgroundResource(R.drawable.ic_default_cover_background)
 
-            viewBinding.largePlayer.titleBackground.setBackgroundColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.colorPrimary
-                )
-            )
-
-            viewBinding.largePlayer.largeTitle.setTextColor(Color.WHITE)
-            viewBinding.largePlayer.largeSubTitle.setTextColor(Color.WHITE)
 
         } else {
             Glide.with(view)
@@ -271,13 +259,11 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
                         }
                     }
                 })
-
         }
 
         viewBinding.smallPlayer.smallTitle.text = metadata.title
         viewBinding.smallPlayer.smallSubTitle.text = metadata.subtitle
         viewBinding.largePlayer.largeTitle.text = metadata.title
-        viewBinding.largePlayer.largeSubTitle.text = metadata.subtitle
         viewBinding.largePlayer.totalDuration.text = metadata.duration
     }
 
@@ -301,19 +287,5 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         val bodyColor: Int = palette.getDominantColor(
             ContextCompat.getColor(requireContext(), android.R.color.black)
         )
-
-        val titleTextColor =
-            palette.getLightVibrantColor(
-                ContextCompat.getColor(requireContext(), android.R.color.white)
-            )
-
-        val bodyTextColor =
-            palette.getLightMutedColor(
-                ContextCompat.getColor(requireContext(), android.R.color.white)
-            )
-
-        viewBinding.largePlayer.titleBackground.setBackgroundColor(bodyColor)
-        viewBinding.largePlayer.largeTitle.setTextColor(titleTextColor)
-        viewBinding.largePlayer.largeSubTitle.setTextColor(bodyTextColor)
     }
 }
