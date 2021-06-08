@@ -1,12 +1,10 @@
 package com.joe.podcastplayer.fragment
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import android.view.View
 import android.widget.SeekBar
@@ -74,6 +72,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         disableSeekInSmallSeekBar()
 
         viewBinding.largePlayer.tvChannelTitle.text = channelTitle
+        viewBinding.largePlayer.largeTitle.focusable = true
     }
 
     override fun initAction() {
@@ -103,19 +102,19 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         }
 
         viewBinding.largePlayer.largePreviousButton.setOnClickListener {
-            nowPlayingViewModel.skipToPreviousSong()
+            nowPlayingViewModel.skipToPrevious()
         }
 
         viewBinding.largePlayer.largeNextButton.setOnClickListener {
-            nowPlayingViewModel.skipToNextSong()
+            nowPlayingViewModel.skipToNext()
         }
 
-        viewBinding.largePlayer.shuffleButton.setOnClickListener {
-            nowPlayingViewModel.changeShuffleMode()
+        viewBinding.largePlayer.rewindButton.setOnClickListener {
+            nowPlayingViewModel.rewind()
         }
 
-        viewBinding.largePlayer.repeatButton.setOnClickListener {
-            nowPlayingViewModel.changeRepeatMode()
+        viewBinding.largePlayer.fastFowardButton.setOnClickListener {
+            nowPlayingViewModel.fastForward()
         }
     }
 
@@ -135,53 +134,6 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
                 viewBinding.smallPlayer.playPauseImage.setImageState(it, true)
                 viewBinding.largePlayer.largePlayPauseButton.setImageState(it, true)
             })
-
-        nowPlayingViewModel.shuffleMode.observe(viewLifecycleOwner,
-            {
-                when (it) {
-                    PlaybackStateCompat.SHUFFLE_MODE_NONE -> {
-                        viewBinding.largePlayer.shuffleButton.setColorFilter(Color.WHITE)
-                    }
-                    PlaybackStateCompat.SHUFFLE_MODE_ALL -> {
-                        viewBinding.largePlayer.shuffleButton.setColorFilter(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
-                }
-            }
-        )
-
-        nowPlayingViewModel.repeatMode.observe(viewLifecycleOwner,
-            {
-                when (it) {
-                    PlaybackStateCompat.REPEAT_MODE_NONE -> {
-                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat)
-                        viewBinding.largePlayer.repeatButton.setColorFilter(Color.WHITE)
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat_one)
-                        viewBinding.largePlayer.repeatButton.setColorFilter(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
-                    PlaybackStateCompat.REPEAT_MODE_ALL -> {
-                        viewBinding.largePlayer.repeatButton.setImageResource(R.drawable.ic_repeat)
-                        viewBinding.largePlayer.repeatButton.setColorFilter(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.colorPrimary
-                            )
-                        )
-                    }
-                }
-            }
-        )
     }
 
     private fun setBottomSheetBehavior() {
@@ -263,8 +215,9 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         }
 
         viewBinding.smallPlayer.smallTitle.text = metadata.title
-        viewBinding.smallPlayer.smallSubTitle.text = metadata.subtitle
+        viewBinding.smallPlayer.smallSubTitle.text = channelTitle
         viewBinding.largePlayer.largeTitle.text = metadata.title
+        viewBinding.largePlayer.largeSubTitle.text = channelTitle
         viewBinding.largePlayer.totalDuration.text = metadata.duration
     }
 

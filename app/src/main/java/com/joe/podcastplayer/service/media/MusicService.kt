@@ -18,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.joe.podcastplayer.service.di.InjectorUtils
 import com.joe.podcastplayer.extension.id
-import com.joe.podcastplayer.extension.isPlaying
 import com.joe.podcastplayer.extension.toMediaSource
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -38,7 +37,13 @@ import kotlinx.coroutines.launch
 
 class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() {
 
-    private val TAG = MusicService::class.java.simpleName
+    companion object {
+        const val BROWSABLE_ROOT = "/"
+        const val EMPTY_ROOT = "@empty@"
+        private const val MUSIC_USER_AGENT = "music.agent"
+        private val TAG = MusicService::class.java.simpleName
+    }
+
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var feedSessionList: ArrayList<FeedItem>
@@ -70,7 +75,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
 
     override fun onCreate() {
         super.onCreate()
-        Log.e("HAHA_MusicService", "onCreate")
+        Log.e(TAG, "onCreate")
         val sessionActivityPendingIntent =
             packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
                 PendingIntent.getActivity(this, 0, sessionIntent, 0)
@@ -101,29 +106,13 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.e("HAHA_MusicService", "onStartCommand")
+        Log.e(TAG, "onStartCommand")
         handleIntent(intent)
         return Service.START_NOT_STICKY
     }
 
     private fun handleIntent(intent: Intent?) {
         intent ?: return
-    }
-
-    private fun handlePlayPause() {
-        if (mediaSession.controller.playbackState.isPlaying) {
-            mediaSession.controller.transportControls.pause()
-        } else {
-            mediaSession.controller.transportControls.play()
-        }
-    }
-
-    private fun handleSkipNext() {
-        mediaSession.controller.transportControls.skipToNext()
-    }
-
-    private fun handleSkipPrevious() {
-        mediaSession.controller.transportControls.skipToPrevious()
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
@@ -147,10 +136,10 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
     ): BrowserRoot? {
         val isKnownCaller = allowBrowsing(clientPackageName)
         return if (isKnownCaller) {
-            BrowserRoot(FANCY_BROWSABLE_ROOT, null)
+            BrowserRoot(BROWSABLE_ROOT, null)
         } else {
             if (BuildConfig.DEBUG) {
-                BrowserRoot(FANCY_EMPTY_ROOT, null)
+                BrowserRoot(EMPTY_ROOT, null)
             } else {
                 null
             }
@@ -310,7 +299,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
             ongoing: Boolean
         ) {
 
-            Log.e("HAHA", "onNotificationPosted ongoing:$ongoing $isForegroundService")
+            Log.e(TAG, "onNotificationPosted ongoing:$ongoing $isForegroundService")
             if (ongoing && !isForegroundService) {
 
                 isForegroundService = true
@@ -331,7 +320,3 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
         }
     }
 }
-
-const val FANCY_BROWSABLE_ROOT = "/"
-const val FANCY_EMPTY_ROOT = "@empty@"
-private const val MUSIC_USER_AGENT = "music.agent"

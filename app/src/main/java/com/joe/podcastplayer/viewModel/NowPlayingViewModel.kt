@@ -36,7 +36,6 @@ class NowPlayingViewModel(
         val subtitle: String?,
         val duration: String
     ) {
-
         companion object {
             /**
              * Utility method to convert milliseconds to a display of minutes and seconds
@@ -62,20 +61,10 @@ class NowPlayingViewModel(
     }
 
     val mediaButtonRes = MutableLiveData<IntArray>()
-    val shuffleMode = MutableLiveData<Int>()
-    val repeatMode = MutableLiveData<Int>()
 
     private var updatePosition = true
     private var mediaDuration = 0L
     private val handler = Handler(Looper.getMainLooper())
-    private val shuffleModeChoices =
-        listOf(PlaybackStateCompat.SHUFFLE_MODE_NONE, PlaybackStateCompat.SHUFFLE_MODE_ALL)
-    private val repeatModeChoices =
-        listOf(
-            PlaybackStateCompat.REPEAT_MODE_NONE,
-            PlaybackStateCompat.REPEAT_MODE_ONE,
-            PlaybackStateCompat.REPEAT_MODE_ALL
-        )
 
     private val playbackStateObserver = Observer<PlaybackStateCompat> {
         Log.e("HAHA+++++++", "playbackStateObserver")
@@ -90,64 +79,36 @@ class NowPlayingViewModel(
         mediaDuration = it.duration
     }
 
-    private val shuffleModeObserver = Observer<Int> {
-        Log.e("HAHA+++++++", "shuffleModeObserver")
-        shuffleMode.postValue(it)
-    }
-
-    private val repeatModeObserver = Observer<Int> {
-        Log.e("HAHA+++++++", "repeatModeObserver")
-        repeatMode.postValue(it)
-    }
-
     private val musicServiceConnection = musicServiceConnection.also {
         Log.e("HAHA+++++++", "musicServiceConnection")
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
-        it.shuffleModeState.observeForever(shuffleModeObserver)
-        it.repeatModeState.observeForever(repeatModeObserver)
         checkPlaybackPosition()
     }
 
-    fun skipToNextSong() {
+    fun skipToNext() {
         musicServiceConnection.transportControls.skipToNext()
     }
 
-    fun skipToPreviousSong() {
+    fun skipToPrevious() {
         musicServiceConnection.transportControls.skipToPrevious()
     }
 
-    fun changeShuffleMode() {
-        val nowShuffleMode =
-            shuffleModeChoices.indexOf(musicServiceConnection.mediaController.shuffleMode)
-        val targetShuffleMode = when (nowShuffleMode) {
-            PlaybackStateCompat.SHUFFLE_MODE_NONE -> PlaybackStateCompat.SHUFFLE_MODE_ALL
-            PlaybackStateCompat.SHUFFLE_MODE_ALL -> PlaybackStateCompat.SHUFFLE_MODE_NONE
-            else -> PlaybackStateCompat.SHUFFLE_MODE_ALL
-        }
-
-        musicServiceConnection.transportControls.setShuffleMode(targetShuffleMode)
+    fun rewind() {
+        musicServiceConnection.transportControls.rewind()
     }
 
-    fun changeRepeatMode() {
-        val nowRepeatMode =
-            repeatModeChoices.indexOf(musicServiceConnection.mediaController.repeatMode)
-        val targetRepeatMode = when (nowRepeatMode) {
-            PlaybackStateCompat.REPEAT_MODE_NONE -> PlaybackStateCompat.REPEAT_MODE_ONE
-            PlaybackStateCompat.REPEAT_MODE_ONE -> PlaybackStateCompat.REPEAT_MODE_ALL
-            PlaybackStateCompat.REPEAT_MODE_ALL -> PlaybackStateCompat.REPEAT_MODE_NONE
-            else -> PlaybackStateCompat.REPEAT_MODE_ALL
-        }
-
-        musicServiceConnection.transportControls.setRepeatMode(targetRepeatMode)
+    fun fastForward() {
+        musicServiceConnection.transportControls.fastForward()
     }
 
     fun changePlaybackPosition(seekBarProgress: Int, seekBarMax: Int) {
         Log.e(className, "seekBarProgress:$seekBarProgress seekBarMax:$seekBarMax")
-        val lastPosition = mediaDuration*1L*seekBarProgress/seekBarMax
+        val lastPosition = mediaDuration * 1L * seekBarProgress / seekBarMax
         Log.e(className, "lastPosition:$lastPosition")
         musicServiceConnection.transportControls.seekTo(lastPosition)
     }
+
     /**
      * Internal function that recursively calls itself every [POSITION_UPDATE_INTERVAL_MILLIS] ms
      * to check the current playback position and updates the corresponding LiveData object when it
