@@ -249,10 +249,6 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
                 ExoPlaybackException.TYPE_UNEXPECTED -> {
                     Log.e(TAG, "TYPE_UNEXPECTED: " + error.unexpectedException.message)
                 }
-                // Occurs when there is a OutOfMemory error.
-                ExoPlaybackException.TYPE_OUT_OF_MEMORY -> {
-                    Log.e(TAG, "TYPE_OUT_OF_MEMORY: " + error.outOfMemoryError.message)
-                }
                 // If the error occurs in a remote component, Exoplayer raises a type_remote error.
                 ExoPlaybackException.TYPE_REMOTE -> {
                     Log.e(TAG, "TYPE_REMOTE: " + error.message)

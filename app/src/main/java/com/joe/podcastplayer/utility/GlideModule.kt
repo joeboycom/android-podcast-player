@@ -1,4 +1,4 @@
-package com.joe.podcastplayer
+package com.joe.podcastplayer.utility
 
 import android.content.Context
 import com.bumptech.glide.GlideBuilder

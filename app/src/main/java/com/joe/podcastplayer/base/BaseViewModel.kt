@@ -2,8 +2,4 @@ package com.joe.podcastplayer.base
 
 import androidx.lifecycle.ViewModel
 
-open class BaseViewModel : ViewModel() {
-
-
-
-}
+open class BaseViewModel : ViewModel()

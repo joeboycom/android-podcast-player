@@ -1,4 +1,4 @@
-package com.joe.podcastplayer
+package com.joe.podcastplayer.utility
 
 import android.app.Activity
 import android.content.Context
@@ -20,31 +20,11 @@ import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 open class ImageLoader {
 
     companion object {
-
-        private val invalidAvatars = arrayListOf<String>(
-            // "https://cdn.voicetube.com/assets/img/default-avatar",
-            // "https://cdn.voicetube.com/assets/img/pp_image2.jpg",
-            // "https://cdn-test.voicetube.com/assets/img/default-avatar2.jpg"
-        )
-
         private var avatarOption = RequestOptions().circleCrop()
         private val circleOption = RequestOptions().circleCrop()
 
-        fun addInvalidAvatarUrl(url: String) {
-            val exist = invalidAvatars.any { it == url }
-            if (!exist) invalidAvatars.add(url)
-        }
-
-        fun setAvatarFallbackResId(@DrawableRes resourceId: Int) {
-            avatarOption = avatarOption.fallback(resourceId)
-        }
-
         fun setAvatarPlaceHolderResId(@DrawableRes resourceId: Int) {
             avatarOption = avatarOption.placeholder(resourceId)
-        }
-
-        fun setCircleFallbackResId(@DrawableRes resourceId: Int) {
-            avatarOption = avatarOption.fallback(resourceId)
         }
 
         fun setCirclePlaceHolderResId(@DrawableRes resourceId: Int) {
@@ -67,7 +47,7 @@ open class ImageLoader {
 
     constructor(activity: Activity) : this(Glide.with(activity), activity)
 
-    constructor(fragment: Fragment) : this(Glide.with(fragment), fragment.activity!!)
+    constructor(fragment: Fragment) : this(Glide.with(fragment), fragment.requireActivity())
 
     constructor(context: Context) : this(Glide.with(context), context)
 
@@ -152,11 +132,6 @@ open class ImageLoader {
         }.into(iv)
     }
 
-    fun loadAvatar(url: String?, iv: ImageView) {
-        if (isDestroy(context)) return
-        requestManager.load(processInvalidAvatar(url)).transition(DrawableTransitionOptions.withCrossFade()).apply(avatarOption).into(iv)
-    }
-
     fun loadCircle(
         url: String?,
         iv: ImageView,
@@ -215,12 +190,6 @@ open class ImageLoader {
             }
             if (transformations != null) this.apply(bitmapTransform(MultiTransformation(transformations)))
         }.apply(circleOption).into(iv)
-    }
-
-    private fun processInvalidAvatar(url: String?): String? {
-        if (url == null) return null
-        if (invalidAvatars.contains(url)) return null
-        return url
     }
 
     private fun isDestroy(context: Context?): Boolean {

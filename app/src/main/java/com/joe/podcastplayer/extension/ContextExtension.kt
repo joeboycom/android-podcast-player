@@ -10,20 +10,6 @@ import android.view.WindowManager
 import kotlin.math.max
 import kotlin.math.min
 
-// https://stackoverflow.com/questions/7085644/how-to-check-if-apk-is-signed-or-debug-build
-// after assemble to aar BuildConfig.Debug will always false, so use the code down below and replace BuildConfig.Debug
-val Context.isDebugMode: Boolean
-    get() = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
-
-val Context.isTablet: Boolean
-    get() {
-        return try {
-            resources.configuration.screenLayout and Configuration.SCREENLAYOUT_SIZE_MASK >= Configuration.SCREENLAYOUT_SIZE_LARGE
-        } catch (e: Exception) {
-            false
-        }
-    }
-
 private var realMetrics: DisplayMetrics? = null
 private fun Context.getRealMetrics(): DisplayMetrics {
     if (realMetrics != null) return realMetrics!!

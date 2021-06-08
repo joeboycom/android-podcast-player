@@ -9,6 +9,7 @@ import com.joe.podcastplayer.*
 import com.joe.podcastplayer.activity.MainActivity
 import com.joe.podcastplayer.adpter.EpisodeAdapter
 import com.joe.podcastplayer.base.BaseFragment
+import com.joe.podcastplayer.constant.TransitionEffect
 import com.joe.podcastplayer.databinding.HomeFragmentBinding
 import com.joe.podcastplayer.extension.*
 import com.joe.podcastplayer.viewModel.HomeViewModel
@@ -112,8 +113,8 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         viewBinding.tvChannelDescription.text = channel.description
         viewBinding.recyclerView.adapter = adapter
         viewBinding.swipeRefresh.isRefreshing = false
-        imageLoader.load(channel.image?.url, viewBinding.ivHeaderImage)
         viewBinding.loadingSpinner.setVisibility(false)
         viewBinding.ivExpand.setVisibility(true)
+        viewBinding.ivHeaderImage.load(channel.image?.url)
     }
 }

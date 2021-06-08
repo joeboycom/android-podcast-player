@@ -10,7 +10,7 @@ import android.widget.ImageView
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import com.joe.podcastplayer.ImageLoader
+import com.joe.podcastplayer.utility.ImageLoader
 import com.joe.podcastplayer.viewModel.component.ViewModelFactory
 import jp.wasabeef.glide.transformations.RoundedCornersTransformation
 import java.lang.reflect.Method
@@ -35,7 +35,7 @@ abstract class BaseFragment<T : ViewBinding> : Fragment(), ICoreFragment {
     val isFirstIn: Boolean get() = (resumeTimes <= 1)
     lateinit var viewBinding: T
 
-    val imageLoader: ImageLoader by lazy { ImageLoader(this) }
+    private val imageLoader: ImageLoader by lazy { ImageLoader(this) }
 
     var viewModelFactory = ViewModelFactory()
 
@@ -130,6 +130,5 @@ abstract class BaseFragment<T : ViewBinding> : Fragment(), ICoreFragment {
     ) {
         imageLoader.load(redId, this, cornerRadius, cornerType, blurRadius, enableFadeTransition, placeHolderResId, placeHolderDrawable, fallbackResId, fallbackDrawable)
     }
-
-    fun ImageView.loadAvatar(url: String?, iv: ImageView) = imageLoader.loadAvatar(url, this)
+    // endregion
 }

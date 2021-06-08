@@ -32,8 +32,6 @@ val isNOrHigher = Build.VERSION.SDK_INT >= 24
 val isMOrHigher = Build.VERSION.SDK_INT >= 23
 val isLOrHigher = Build.VERSION.SDK_INT >= 21
 
-val isHuaweiDevice = Build.BRAND.toLowerCase(Locale.US) == "huawei"
-
 val isNetworkAvailable: Boolean
     @SuppressLint("MissingPermission")
     get() {

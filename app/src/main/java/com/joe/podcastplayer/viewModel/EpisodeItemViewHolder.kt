@@ -30,7 +30,7 @@ class EpisodeItemViewHolder(parent: ViewGroup) : BaseViewHolder<HolderItemEpisod
         if (this.feedItem == null) return
         viewBinding.tvEpisodeTitle.text = feedItem.title
         viewBinding.tvEpisodeDescription.text = feedItem.description
-        imageLoader.load(url = feedItem.image, iv = viewBinding.ivEpisodeImage, cornerRadius = 0, placeHolderResId = R.mipmap.placeholder)
+        viewBinding.ivEpisodeImage.load(feedItem.image, placeHolderResId = R.mipmap.placeholder)
         viewBinding.tvPublishingDate.text = getPublishingDateText(feedItem.pubDate)
     }
 

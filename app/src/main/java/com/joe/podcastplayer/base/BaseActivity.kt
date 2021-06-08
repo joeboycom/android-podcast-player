@@ -9,7 +9,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.viewbinding.ViewBinding
-import com.joe.podcastplayer.ImageLoader
+import com.joe.podcastplayer.utility.ImageLoader
 import com.joe.podcastplayer.viewModel.component.ViewModelFactory
 import com.trello.rxlifecycle4.android.lifecycle.kotlin.bindUntilEvent
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -55,7 +55,7 @@ open class BaseActivity<T : ViewBinding> : AppCompatActivity(), ICoreActivity {
 
     var viewModelFactory = ViewModelFactory()
 
-    val imageLoader: ImageLoader by lazy { ImageLoader(this) }
+    private val imageLoader: ImageLoader by lazy { ImageLoader(this) }
 
     private fun addResumeTime() {
         resumeTimes += 1
@@ -81,7 +81,6 @@ open class BaseActivity<T : ViewBinding> : AppCompatActivity(), ICoreActivity {
     }
 
     fun sendScreen() {
-
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -199,8 +198,5 @@ open class BaseActivity<T : ViewBinding> : AppCompatActivity(), ICoreActivity {
     ) {
         imageLoader.load(redId, this, cornerRadius, cornerType, blurRadius, enableFadeTransition, placeHolderResId, placeHolderDrawable, fallbackResId, fallbackDrawable)
     }
-
-    fun ImageView.loadAvatar(url: String?, iv: ImageView) = imageLoader.loadAvatar(url, this)
-
     // endregion
 }

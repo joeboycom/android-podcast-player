@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import com.google.gson.reflect.TypeToken
-import com.joe.podcastplayer.TransitionEffect
+import com.joe.podcastplayer.constant.TransitionEffect
 import com.joe.podcastplayer.activity.MainActivity
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.EpisodeFragmentBinding
@@ -70,15 +70,14 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
         viewBinding.tvEpisodeChannel.text = channelTitle
         viewBinding.tvEpisodeTitle.text = feedItem?.title
         viewBinding.tvEpisodeDescription.text = feedItem?.description
-
-        imageLoader.load(feedItem?.image, viewBinding.ivHeaderImage)
+        viewBinding.ivHeaderImage.load(feedItem?.image)
     }
 
     override fun initAction() {
         viewBinding.playAppCompatButton.onClick {
             if (feedItem == null) return@onClick
             val fragment = NowPlayingFragment.newInstance(channelTitle, feedItem!!.toJson())
-            (activity as MainActivity?)!!.loadChildFragment(fragment, TransitionEffect.SLIDE)
+            (activity as MainActivity?)!!.showFragment(fragment, TransitionEffect.SLIDE)
 
             playPodcast(feedItem!!)
         }

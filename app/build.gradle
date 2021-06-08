@@ -62,16 +62,15 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:${versions.glide}"
     implementation "jp.wasabeef:glide-transformations:4.3.0"
     kapt "com.github.bumptech.glide:compiler:${versions.glide}"
+    implementation("com.readystatesoftware.systembartint:systembartint:1.0.4")
 
     // Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
 
     // Rx
-    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
-    implementation "io.reactivex.rxjava3:rxkotlin:3.0.1"
-    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxAndroidVersion}"
-    implementation "io.reactivex.rxjava2:rxjava:${versions.rxJavaVersion}"
+    implementation "io.reactivex.rxjava3:rxandroid:${versions.rxAndroidVersion}"
+    implementation "io.reactivex.rxjava3:rxkotlin:${versions.rxJavaVersion}"
     implementation("com.trello.rxlifecycle4:rxlifecycle-android-lifecycle-kotlin:4.0.2")
     implementation("com.jakewharton.rxbinding4:rxbinding:4.0.0")
     implementation("com.jakewharton.rxbinding4:rxbinding-viewpager:4.0.0")
@@ -79,8 +78,6 @@ dependencies {
 
     // AndroidX
     implementation 'androidx.core:core-ktx:1.5.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
@@ -92,9 +89,9 @@ dependencies {
     implementation "androidx.activity:activity-ktx:${versions.activityAndroidx}"
 
     // ExoPlayer
-    implementation 'com.google.android.exoplayer:extension-mediasession:2.11.8'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.11.8'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.11.8'
+    implementation 'com.google.android.exoplayer:extension-mediasession:2.14.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.14.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.14.0'
 
     // Dagger
 //    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
