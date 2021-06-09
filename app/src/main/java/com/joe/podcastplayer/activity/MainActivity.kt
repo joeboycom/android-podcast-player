@@ -1,10 +1,9 @@
 package com.joe.podcastplayer.activity
 
-import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.joe.podcastplayer.R
-import com.joe.podcastplayer.constant.TransitionEffect
 import com.joe.podcastplayer.base.BaseActivity
+import com.joe.podcastplayer.constant.TransitionEffect
 import com.joe.podcastplayer.databinding.ActivityMainBinding
 import com.joe.podcastplayer.extension.useStatusBarAndNavigationBar
 import com.joe.podcastplayer.fragment.HomeFragment
@@ -18,16 +17,15 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
 
     private var homeFragment = HomeFragment.newInstance(PODCAST_RSS_URL)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun init() {
         useStatusBarAndNavigationBar(0xFF201F23.toInt(), false, 0xFF2F2E33.toInt(), false)
 
         val transaction = supportFragmentManager.beginTransaction()
         transaction.add(viewBinding.contentFrame.id, homeFragment, homeFragment.hashCode().toString())
         transaction.disallowAddToBackStack().commitAllowingStateLoss()
+    }
+
+    override fun initLayout() {
     }
 
     fun showFragment(fragment: Fragment, transition: TransitionEffect? = TransitionEffect.NONE) {

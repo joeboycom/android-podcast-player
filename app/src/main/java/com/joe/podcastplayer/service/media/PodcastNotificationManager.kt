@@ -19,7 +19,7 @@ import kotlinx.coroutines.*
 const val NOW_PLAYING_CHANNEL_ID = "com.joe.podcastplayer.service.media.NOW_PLAYING"
 const val NOW_PLAYING_NOTIFICATION_ID = 0x123 // Arbitrary number used to identify our notification
 
-class MusicNotificationManager(
+class PodcastNotificationManager(
     private val context: Context,
     sessionToken: MediaSessionCompat.Token,
     notificationListener: PlayerNotificationManager.NotificationListener

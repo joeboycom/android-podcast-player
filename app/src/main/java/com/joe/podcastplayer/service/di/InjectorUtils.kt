@@ -4,8 +4,8 @@ import android.content.ComponentName
 import android.content.Context
 import com.google.gson.reflect.TypeToken
 import com.joe.podcastplayer.extension.gson
-import com.joe.podcastplayer.service.media.MusicService
-import com.joe.podcastplayer.service.media.MusicServiceConnection
+import com.joe.podcastplayer.service.media.PodcastService
+import com.joe.podcastplayer.service.media.PodcastServiceConnection
 import com.joe.podcastplayer.viewModel.EpisodeViewModel
 import com.joe.podcastplayer.viewModel.NowPlayingViewModel
 import com.prof.rssparser.FeedItem
@@ -15,10 +15,10 @@ import com.prof.rssparser.FeedItem
  */
 object InjectorUtils {
 
-    private fun provideMusicServiceConnection(context: Context): MusicServiceConnection {
-        return MusicServiceConnection.getInstance(
+    private fun provideMediaServiceConnection(context: Context): PodcastServiceConnection {
+        return PodcastServiceConnection.getInstance(
             context,
-            ComponentName(context, MusicService::class.java)
+            ComponentName(context, PodcastService::class.java)
         )
     }
 
@@ -28,12 +28,12 @@ object InjectorUtils {
     }
 
     fun provideFeedItemListViewModel(context: Context): EpisodeViewModel.Factory {
-        val musicServiceConnection = provideMusicServiceConnection(context)
+        val musicServiceConnection = provideMediaServiceConnection(context)
         return EpisodeViewModel.Factory(musicServiceConnection)
     }
 
     fun provideNowPlayingViewModel(context: Context): NowPlayingViewModel.Factory {
-        val musicServiceConnection = provideMusicServiceConnection(context)
+        val musicServiceConnection = provideMediaServiceConnection(context)
         return NowPlayingViewModel.Factory(
             context,
             musicServiceConnection

@@ -3,9 +3,6 @@ package com.joe.podcastplayer.extension
 import android.widget.SeekBar
 import androidx.appcompat.widget.AppCompatSeekBar
 
-/**
- * Created by Suki on 3/26/2018.
- */
 inline fun AppCompatSeekBar.onSeekBarChange(init: SimpleOnSeekBarChange.() -> Unit) = setOnSeekBarChangeListener(SimpleOnSeekBarChange().apply(init))
 
 class SimpleOnSeekBarChange : SeekBar.OnSeekBarChangeListener {

@@ -44,7 +44,6 @@
         android:marqueeRepeatLimit="-1"
         android:focusableInTouchMode="true"
         android:maxLines="1"
-        android:text="14sp"
         android:textColor="@color/white"
         app:layout_constraintEnd_toStartOf="@+id/playPauseImage"
         app:layout_constraintStart_toEndOf="@id/smallCover"

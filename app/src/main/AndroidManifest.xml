@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name="com.joe.podcastplayer.service.media.MusicService"
+            android:name="com.joe.podcastplayer.service.media.PodcastService"
             android:enabled="true"
             tools:ignore="ExportedService">
             <intent-filter>

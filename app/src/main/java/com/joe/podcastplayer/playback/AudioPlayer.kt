@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.PowerManager
-import android.util.Log
 import android.view.SurfaceHolder
 
 
@@ -40,27 +39,20 @@ class AudioPlayer : IPlayer {
         mediaPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer?.setVolume(1.0f, 1.0f)
         mediaPlayer?.setOnInfoListener { mp, what, extra ->
-            Log.e("HAHA", "setOnInfoListener: ${what}")
-            Log.e("HAHA", "setOnInfoListener: ${mp.duration}")
-            Log.e("HAHA", "setOnInfoListener: ${mp.currentPosition}")
             false
 //            val metadataBuilder = MediaMetadata.Builder()
 //            metadataBuilder.putLong(MediaMetadata.METADATA_KEY_DURATION, mp.duration)
         }
         mediaPlayer?.setOnPreparedListener {
-            Log.e("HAHA", "setOnPreparedListener: ${it.duration}")
-            Log.e("HAHA", "setOnPreparedListener: ${it.currentPosition}")
             start()
             onMpPrepareListener?.invoke(it)
         }
 
         mediaPlayer?.setOnBufferingUpdateListener { mp, percent ->
             onMpBufferingUpdateListener?.invoke(mp.currentPosition)
-            Log.e("HAHA", "setOnBufferingUpdateListener isPlaying: ${mp.isPlaying}")
         }
 
         mediaPlayer?.setOnCompletionListener {
-            Log.e("HAHA", "setOnCompletionListener")
         }
     }
 
@@ -72,25 +64,18 @@ class AudioPlayer : IPlayer {
         get() = 0F
 
     override fun pause() {
-        Log.e("HAHA", "mediaPlayer pause")
         mediaPlayer?.pause()
-        Log.e("HAHA", "mediaPlayer duration:${mediaPlayer?.duration}")
-        Log.e("HAHA", "mediaPlayer currentPosition:${mediaPlayer?.currentPosition}")
     }
 
     override fun start() {
-        Log.e("HAHA", "mediaPlayer start")
         mediaPlayer?.start()
     }
 
     override fun stop() {
-        Log.e("HAHA", "mediaPlayer stop")
         mediaPlayer?.stop()
     }
 
     override fun prepare() {
-        Log.e("HAHA", "mediaPlayer prepare")
-
         mediaPlayer?.prepare()
     }
     override fun release() {
@@ -102,7 +87,6 @@ class AudioPlayer : IPlayer {
     }
 
     override fun seekTo(msec: Int) {
-        Log.e("HAHA", "mediaPlayer seekTo $msec")
         mediaPlayer?.seekTo(msec)
     }
 

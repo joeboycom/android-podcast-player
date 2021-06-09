@@ -15,13 +15,13 @@ import com.joe.podcastplayer.R
 import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.extension.*
 import com.joe.podcastplayer.service.media.EMPTY_PLAYBACK_STATE
-import com.joe.podcastplayer.service.media.MusicServiceConnection
+import com.joe.podcastplayer.service.media.PodcastServiceConnection
 import com.joe.podcastplayer.service.media.NOTHING_PLAYING
 import kotlin.math.floor
 
 class NowPlayingViewModel(
     private val context: Context,
-    musicServiceConnection: MusicServiceConnection
+    podcastServiceConnection: PodcastServiceConnection
 ) : ViewModel() {
 
     /**
@@ -67,46 +67,43 @@ class NowPlayingViewModel(
     private val handler = Handler(Looper.getMainLooper())
 
     private val playbackStateObserver = Observer<PlaybackStateCompat> {
-        Log.e("HAHA+++++++", "playbackStateObserver")
         playbackState = it ?: EMPTY_PLAYBACK_STATE
-        val metadata = musicServiceConnection.nowPlaying.value ?: NOTHING_PLAYING
+        val metadata = podcastServiceConnection.nowPlaying.value ?: NOTHING_PLAYING
         updateState(playbackState, metadata)
     }
 
     private val mediaMetadataObserver = Observer<MediaMetadataCompat> {
-        Log.e("HAHA+++++++", "mediaMetadataObserver")
         updateState(playbackState, it)
         mediaDuration = it.duration
     }
 
-    private val musicServiceConnection = musicServiceConnection.also {
-        Log.e("HAHA+++++++", "musicServiceConnection")
+    private val playerServiceConnection = podcastServiceConnection.also {
         it.playbackState.observeForever(playbackStateObserver)
         it.nowPlaying.observeForever(mediaMetadataObserver)
         checkPlaybackPosition()
     }
 
     fun skipToNext() {
-        musicServiceConnection.transportControls.skipToNext()
+        playerServiceConnection.transportControls.skipToNext()
     }
 
     fun skipToPrevious() {
-        musicServiceConnection.transportControls.skipToPrevious()
+        playerServiceConnection.transportControls.skipToPrevious()
     }
 
     fun rewind() {
-        musicServiceConnection.transportControls.rewind()
+        playerServiceConnection.transportControls.rewind()
     }
 
     fun fastForward() {
-        musicServiceConnection.transportControls.fastForward()
+        playerServiceConnection.transportControls.fastForward()
     }
 
     fun changePlaybackPosition(seekBarProgress: Int, seekBarMax: Int) {
         Log.e(className, "seekBarProgress:$seekBarProgress seekBarMax:$seekBarMax")
         val lastPosition = mediaDuration * 1L * seekBarProgress / seekBarMax
         Log.e(className, "lastPosition:$lastPosition")
-        musicServiceConnection.transportControls.seekTo(lastPosition)
+        playerServiceConnection.transportControls.seekTo(lastPosition)
     }
 
     /**
@@ -116,7 +113,6 @@ class NowPlayingViewModel(
      */
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
-        Log.e("HAHA", "checkPlaybackPosition $currPosition $mediaDuration")
         if (mediaPosition.value != currPosition) {
             mediaPosition.postValue(currPosition)
             if (mediaDuration > 0) {
@@ -134,7 +130,6 @@ class NowPlayingViewModel(
         playbackState: PlaybackStateCompat,
         mediaMetadata: MediaMetadataCompat
     ) {
-        Log.e("HAHA", "updateState ${mediaMetadata.duration}")
         // Only update media item once we have duration available
         if (mediaMetadata.duration != 0L && mediaMetadata.id != null) {
             val nowPlayingMetadata = NowPlayingMetadata(
@@ -158,10 +153,9 @@ class NowPlayingViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        Log.e("HAHA", "onCleared")
-        // Remove the permanent observers from the MusicServiceConnection.
-        musicServiceConnection.playbackState.removeObserver(playbackStateObserver)
-        musicServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
+        // Remove the permanent observers from the PodcastServiceConnection.
+        playerServiceConnection.playbackState.removeObserver(playbackStateObserver)
+        playerServiceConnection.nowPlaying.removeObserver(mediaMetadataObserver)
 
         // Stop updating the position
         updatePosition = false
@@ -169,12 +163,12 @@ class NowPlayingViewModel(
 
     class Factory(
         private val context: Context,
-        private val musicServiceConnection: MusicServiceConnection
+        private val podcastServiceConnection: PodcastServiceConnection
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("unchecked_cast")
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return NowPlayingViewModel(context, musicServiceConnection) as T
+            return NowPlayingViewModel(context, podcastServiceConnection) as T
         }
     }
 }

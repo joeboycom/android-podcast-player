@@ -35,19 +35,19 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 
-class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() {
+class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() {
 
     companion object {
         const val BROWSABLE_ROOT = "/"
         const val EMPTY_ROOT = "@empty@"
-        private const val MUSIC_USER_AGENT = "music.agent"
-        private val TAG = MusicService::class.java.simpleName
+        private const val MEDIA_USER_AGENT = "media.agent"
+        private val TAG = PodcastService::class.java.simpleName
     }
 
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
     private lateinit var feedSessionList: ArrayList<FeedItem>
-    private lateinit var notificationManager: MusicNotificationManager
+    private lateinit var notificationManager: PodcastNotificationManager
 
     private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
     private var isForegroundService = false
@@ -70,38 +70,32 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
         .build()
 
     private val dataSourceFactory: DefaultDataSourceFactory by lazy {
-        DefaultDataSourceFactory(this, Util.getUserAgent(this, MUSIC_USER_AGENT), null)
+        DefaultDataSourceFactory(this, Util.getUserAgent(this, MEDIA_USER_AGENT), null)
     }
 
     override fun onCreate() {
         super.onCreate()
         Log.e(TAG, "onCreate")
-        val sessionActivityPendingIntent =
-            packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                PendingIntent.getActivity(this, 0, sessionIntent, 0)
-            }
+        val sessionActivityPendingIntent = packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
+            PendingIntent.getActivity(this, 0, sessionIntent, 0)
+        }
 
-        mediaSession = MediaSessionCompat(this, TAG)
-            .apply {
-                setSessionActivity(sessionActivityPendingIntent)
-                isActive = true
-            }
+        mediaSession = MediaSessionCompat(this, TAG).apply {
+            setSessionActivity(sessionActivityPendingIntent)
+            isActive = true
+        }
 
         sessionToken = mediaSession.sessionToken
 
         feedSessionList = InjectorUtils.provideFeedItemListRepository(this)
+        feedSessionList.reverse() // control the order
         mediaSessionConnector = MediaSessionConnector(mediaSession)
-        mediaSessionConnector.setPlaybackPreparer(MusicPlaybackPreparer())
-        mediaSessionConnector.setQueueNavigator(MusicQueueNavigator(mediaSession))
+        mediaSessionConnector.setPlaybackPreparer(PodcastPlaybackPreparer())
+        mediaSessionConnector.setQueueNavigator(PodcastQueueNavigator(mediaSession))
 
         switchToPlayer(previousPlayer = null, newPlayer = exoPlayer)
 
-        notificationManager = MusicNotificationManager(
-            this,
-            mediaSession.sessionToken,
-            PlayerNotificationListener()
-        )
-
+        notificationManager = PodcastNotificationManager(this, mediaSession.sessionToken, PlayerNotificationListener())
         notificationManager.showNotificationForPlayer(currentPlayer)
     }
 
@@ -122,10 +116,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
         currentPlayer.stop(/* reset= */true)
     }
 
-    override fun onLoadChildren(
-        parentId: String,
-        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
-    ) {
+    override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
         //Do nothing
     }
 
@@ -150,16 +141,10 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
         return clientPackageName == packageName
     }
 
-    private inner class MusicPlaybackPreparer : MediaSessionConnector.PlaybackPreparer {
-        override fun onPrepareFromSearch(
-            query: String, playWhenReady: Boolean,
-            extras: Bundle?
-        ) = Unit
+    private inner class PodcastPlaybackPreparer : MediaSessionConnector.PlaybackPreparer {
+        override fun onPrepareFromSearch(query: String, playWhenReady: Boolean, extras: Bundle?) = Unit
 
-        override fun onCommand(
-            player: Player, controlDispatcher: ControlDispatcher, command: String,
-            extras: Bundle?, cb: ResultReceiver?
-        ): Boolean = false
+        override fun onCommand(player: Player, controlDispatcher: ControlDispatcher, command: String, extras: Bundle?, cb: ResultReceiver?): Boolean = false
 
         override fun getSupportedPrepareActions(): Long =
             PlaybackStateCompat.ACTION_PREPARE_FROM_MEDIA_ID or
@@ -194,11 +179,8 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
         override fun onPrepare(playWhenReady: Boolean) = Unit
     }
 
-    private inner class MusicQueueNavigator(
-        mediaSession: MediaSessionCompat
-    ) : TimelineQueueNavigator(mediaSession) {
-        override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat =
-            currentPlaylistItems[windowIndex].description
+    private inner class PodcastQueueNavigator(mediaSession: MediaSessionCompat) : TimelineQueueNavigator(mediaSession) {
+        override fun getMediaDescription(player: Player, windowIndex: Int): MediaDescriptionCompat = currentPlaylistItems[windowIndex].description
     }
 
     private inner class PlayerEventListener : Player.EventListener {
@@ -276,10 +258,9 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
         itemToPlay: MediaMetadataCompat?, playWhenReady: Boolean,
         playbackStartPositionMs: Long
     ) {
-        val initialWindowIndex =
-            if (itemToPlay == null) 0 else metadataList.indexOfFirst { metadata ->
-                metadata.id == itemToPlay.id
-            }
+        val initialWindowIndex = if (itemToPlay == null) 0 else metadataList.indexOfFirst { metadata ->
+            metadata.id == itemToPlay.id
+        }
         currentPlaylistItems = metadataList
 
         currentPlayer.playWhenReady = playWhenReady
@@ -293,12 +274,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
 
     private inner class PlayerNotificationListener :
         PlayerNotificationManager.NotificationListener {
-        override fun onNotificationPosted(
-            notificationId: Int,
-            notification: Notification,
-            ongoing: Boolean
-        ) {
-
+        override fun onNotificationPosted(notificationId: Int, notification: Notification, ongoing: Boolean) {
             Log.e(TAG, "onNotificationPosted ongoing:$ongoing $isForegroundService")
             if (ongoing && !isForegroundService) {
 
@@ -307,7 +283,7 @@ class MusicService : MediaBrowserServiceCompat(), CoroutineScope by MainScope() 
 
             ContextCompat.startForegroundService(
                 applicationContext,
-                Intent(applicationContext, this@MusicService.javaClass)
+                Intent(applicationContext, this@PodcastService.javaClass)
             )
 
             startForeground(notificationId, notification)

@@ -20,7 +20,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.joe.podcastplayer.R
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.NowPlayingFragmentBinding
+import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.extension.gson
+import com.joe.podcastplayer.extension.onClick
 import com.joe.podcastplayer.service.di.InjectorUtils
 import com.joe.podcastplayer.viewModel.EpisodeViewModel
 import com.joe.podcastplayer.viewModel.NowPlayingViewModel
@@ -30,7 +32,6 @@ import com.prof.rssparser.FeedItem
 
 class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     companion object {
-        const val TAG = "NowPlayingFragment"
         private const val BUNDLE_CHANNEL_TITLE = "BUNDLE_CHANNEL_TITLE"
         private const val BUNDLE_FEED_ITEM = "BUNDLE_FEED_ITEM"
         fun newInstance(channelTitle: String?, feedItem: String?): NowPlayingFragment = NowPlayingFragment().apply {
@@ -64,7 +65,6 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     override fun init() {
-
     }
 
     override fun initLayout() {
@@ -72,7 +72,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         disableSeekInSmallSeekBar()
 
         viewBinding.largePlayer.tvChannelTitle.text = channelTitle
-        viewBinding.largePlayer.largeTitle.focusable = true
+        viewBinding.largePlayer.largeTitle.isFocusable = true
     }
 
     override fun initAction() {
@@ -116,6 +116,9 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         viewBinding.largePlayer.fastFowardButton.setOnClickListener {
             nowPlayingViewModel.fastForward()
         }
+
+        viewBinding.largePlayer.ivClose.onClick {
+        }
     }
 
     override fun initObserver() {
@@ -144,37 +147,31 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
             BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                Log.d(TAG, "slideOffset:$slideOffset")
+                Log.d(className, "slideOffset:$slideOffset")
                 viewBinding.smallPlayer.sectionNowPlayingSmall.alpha = 1 - slideOffset
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
-                    BottomSheetBehavior.STATE_COLLAPSED -> Log.d(TAG, "STATE_COLLAPSED")
+                    BottomSheetBehavior.STATE_COLLAPSED -> Log.d(className, "STATE_COLLAPSED")
                     BottomSheetBehavior.STATE_DRAGGING -> {
-                        Log.d(TAG, "STATE_DRAGGING")
+                        Log.d(className, "STATE_DRAGGING")
                         viewBinding.smallPlayer.sectionNowPlayingSmall.visibility = View.VISIBLE
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
-                        Log.d(TAG, "STATE_EXPANDED")
+                        Log.d(className, "STATE_EXPANDED")
                         viewBinding.smallPlayer.sectionNowPlayingSmall.visibility = View.GONE
                     }
-                    BottomSheetBehavior.STATE_HIDDEN -> Log.d(TAG, "STATE_HIDDEN")
-                    BottomSheetBehavior.STATE_HALF_EXPANDED -> Log.d(TAG, "STATE_HALF_EXPANDED")
-                    BottomSheetBehavior.STATE_SETTLING -> Log.d(TAG, "STATE_SETTLING")
+                    BottomSheetBehavior.STATE_HIDDEN -> Log.d(className, "STATE_HIDDEN")
+                    BottomSheetBehavior.STATE_HALF_EXPANDED -> Log.d(className, "STATE_HALF_EXPANDED")
+                    BottomSheetBehavior.STATE_SETTLING -> Log.d(className, "STATE_SETTLING")
                 }
             }
         })
     }
 
     private fun updateUI(view: View?, metadata: NowPlayingViewModel.NowPlayingMetadata) {
-        Log.e("HAHA-----", "updateUI")
         if (view == null) return
-        Log.e("HAHA", "${metadata.albumArtUri}")
-        Log.e("HAHA", "${metadata.duration}")
-        Log.e("HAHA", "${metadata.id}")
-        Log.e("HAHA", "${metadata.title}")
-        Log.e("HAHA", "${metadata.subtitle}")
         if (metadata.albumArtUri == Uri.EMPTY) {
             viewBinding.smallPlayer.smallCover.setImageResource(R.drawable.ic_default_cover_icon)
             viewBinding.smallPlayer.smallCover.setBackgroundResource(R.drawable.ic_default_cover_background)
@@ -222,7 +219,6 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     private fun updateProgressBar(progress: Int) {
-        Log.e("HAHA-----", "updateProgressBar $seekbarScrollingStart $progress")
         if (seekbarScrollingStart) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             viewBinding.smallPlayer.smallSeekBar.setProgress(progress, true)

@@ -81,6 +81,10 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
 
             playPodcast(feedItem!!)
         }
+
+        viewBinding.ivBack.onClick {
+            activity?.onBackPressed()
+        }
     }
 
     override fun initObserver() {

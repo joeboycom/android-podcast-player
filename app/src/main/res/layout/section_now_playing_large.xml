@@ -4,32 +4,64 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient"
-    android:padding="32dp">
+    android:background="@drawable/bg_gradient">
 
-    <TextView
-        android:id="@+id/tvChannelTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/gray"
-        android:textSize="14sp"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/gray_google_light"
+        app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@tools:sample/lorem" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray_google_light">
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:padding="12dp"
+                android:src="@drawable/ic_baseline_expand_more_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvChannelTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginEnd="32dp"
+                android:gravity="center"
+                android:textColor="@color/gray"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@tools:sample/lorem" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ImageView
         android:id="@+id/largeCover"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="32dp"
         android:background="@color/black"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="H,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvChannelTitle"
+        app:layout_constraintTop_toBottomOf="@+id/appBar"
         tools:ignore="ContentDescription"
         tools:src="@tools:sample/avatars" />
 
@@ -37,12 +69,14 @@
         android:id="@+id/largeTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="30dp"
+        android:layout_marginEnd="32dp"
         android:ellipsize="marquee"
         android:focusable="true"
-        android:marqueeRepeatLimit="-1"
         android:focusableInTouchMode="true"
         android:gravity="start"
+        android:marqueeRepeatLimit="-1"
         android:singleLine="true"
         android:textColor="@color/white"
         android:textSize="22sp"
@@ -56,6 +90,8 @@
         android:id="@+id/largeSubTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:gravity="start"
         android:maxLines="1"
         android:textColor="@color/gray"
@@ -70,7 +106,9 @@
         android:id="@+id/largeSeekBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="18dp"
         android:progressBackgroundTint="@color/white"
         android:progressTint="@color/white"
         android:thumbTint="@color/white"
@@ -82,6 +120,8 @@
         android:id="@+id/nowDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
         android:textColor="@color/gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/largeSeekBar"
@@ -91,6 +131,7 @@
         android:id="@+id/totalDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
         android:textColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/largeSeekBar"
@@ -100,6 +141,7 @@
         android:id="@+id/rewindButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_marginStart="6dp"
         android:layout_marginTop="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/exo_ic_rewind"
@@ -150,6 +192,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginTop="20dp"
+        android:layout_marginEnd="6dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_fast_forward_24"
         app:layout_constraintEnd_toEndOf="parent"
