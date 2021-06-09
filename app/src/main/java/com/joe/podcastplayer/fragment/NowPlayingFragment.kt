@@ -93,12 +93,12 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         })
 
         viewBinding.smallPlayer.playPauseImage.setOnClickListener {
-            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(feedItem) }
+            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(feedItem) }
         }
 
         viewBinding.largePlayer.largePlayPauseButton.setOnClickListener {
             episodeViewModel.playMedia(feedItem!!)
-            nowPlayingViewModel.mediaMetadata.value?.let { episodeViewModel.playMedia(feedItem) }
+            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(feedItem) }
         }
 
         viewBinding.largePlayer.largePreviousButton.setOnClickListener {
@@ -123,16 +123,16 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
 
     override fun initObserver() {
         // Attach observers to the LiveData coming from this ViewModel
-        nowPlayingViewModel.mediaMetadata.observe(viewLifecycleOwner,
+        nowPlayingViewModel.mediaMetadataMutableLiveData.observe(viewLifecycleOwner,
             { mediaItem -> updateUI(view, mediaItem) })
 
-        nowPlayingViewModel.mediaPlayProgress.observe(viewLifecycleOwner,
+        nowPlayingViewModel.mediaPlayProgressMutableLiveData.observe(viewLifecycleOwner,
             { progress -> updateProgressBar(progress) })
 
-        nowPlayingViewModel.mediaPosition.observe(viewLifecycleOwner,
+        nowPlayingViewModel.mediaPositionMutableLiveData.observe(viewLifecycleOwner,
             { position -> viewBinding.largePlayer.nowDuration.text = timestampToMSS(requireContext(), position) })
 
-        nowPlayingViewModel.mediaButtonRes.observe(viewLifecycleOwner,
+        nowPlayingViewModel.mediaButtonResMutableLiveData.observe(viewLifecycleOwner,
             {
                 viewBinding.smallPlayer.playPauseImage.setImageState(it, true)
                 viewBinding.largePlayer.largePlayPauseButton.setImageState(it, true)

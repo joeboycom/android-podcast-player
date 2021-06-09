@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.ResultReceiver
 import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -44,9 +45,9 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
         private val TAG = PodcastService::class.java.simpleName
     }
 
-    private lateinit var mediaSession: MediaSessionCompat
+    private lateinit var mediaSessionCompat: MediaSessionCompat
     private lateinit var mediaSessionConnector: MediaSessionConnector
-    private lateinit var feedSessionList: ArrayList<FeedItem>
+    private lateinit var feedItemList: ArrayList<FeedItem>
     private lateinit var notificationManager: PodcastNotificationManager
 
     private var currentPlaylistItems: List<MediaMetadataCompat> = emptyList()
@@ -80,22 +81,22 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
             PendingIntent.getActivity(this, 0, sessionIntent, 0)
         }
 
-        mediaSession = MediaSessionCompat(this, TAG).apply {
+        mediaSessionCompat = MediaSessionCompat(this, TAG).apply {
             setSessionActivity(sessionActivityPendingIntent)
             isActive = true
         }
 
-        sessionToken = mediaSession.sessionToken
+        sessionToken = mediaSessionCompat.sessionToken
 
-        feedSessionList = InjectorUtils.provideFeedItemListRepository(this)
-        feedSessionList.reverse() // control the order
-        mediaSessionConnector = MediaSessionConnector(mediaSession)
+        feedItemList = InjectorUtils.provideFeedItemListRepository(this)
+        feedItemList.reverse() // control the order
+        mediaSessionConnector = MediaSessionConnector(mediaSessionCompat)
         mediaSessionConnector.setPlaybackPreparer(PodcastPlaybackPreparer())
-        mediaSessionConnector.setQueueNavigator(PodcastQueueNavigator(mediaSession))
+        mediaSessionConnector.setQueueNavigator(PodcastQueueNavigator(mediaSessionCompat))
 
         switchToPlayer(previousPlayer = null, newPlayer = exoPlayer)
 
-        notificationManager = PodcastNotificationManager(this, mediaSession.sessionToken, PlayerNotificationListener())
+        notificationManager = PodcastNotificationManager(this, mediaSessionCompat.sessionToken, PlayerNotificationListener())
         notificationManager.showNotificationForPlayer(currentPlayer)
     }
 
@@ -113,13 +114,36 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
         //Save recent play info
         super.onTaskRemoved(rootIntent)
 
-        currentPlayer.stop(/* reset= */true)
+        /**
+         * By stopping playback, the player will transition to [Player.STATE_IDLE] triggering
+         * [Player.EventListener.onPlayerStateChanged] to be called. This will cause the
+         * notification to be hidden and trigger
+         * [PlayerNotificationManager.NotificationListener.onNotificationCancelled] to be called.
+         * The service will then remove itself as a foreground service, and will call
+         * [stopSelf].
+         */
+        currentPlayer.stop()
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
         //Do nothing
     }
 
+    override fun onDestroy() {
+        mediaSessionCompat.run {
+            isActive = false
+            release()
+        }
+
+        // Free ExoPlayer resources.
+        exoPlayer.removeListener(playerListener)
+        exoPlayer.release()
+    }
+
+    /**
+     * Returns the "root" media ID that the client should request to get the list of
+     * [MediaItem]s to browse/play.
+     */
     override fun onGetRoot(
         clientPackageName: String,
         clientUid: Int,
@@ -157,11 +181,11 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
             launch {
-                val itemToPlay = feedSessionList.find { item ->
+                val itemToPlay = feedItemList.find { item ->
                     item.audio.toString() == uri.toString()
                 }?.toMediaMetadataCompat()
 
-                val playlist = feedSessionList.toMediaMetadataCompat()
+                val playlist = feedItemList.toMediaMetadataCompat()
 
                 if (itemToPlay == null) {
                     Log.w(TAG, "Content not found: uri=$uri.toString()")
@@ -277,16 +301,14 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
         override fun onNotificationPosted(notificationId: Int, notification: Notification, ongoing: Boolean) {
             Log.e(TAG, "onNotificationPosted ongoing:$ongoing $isForegroundService")
             if (ongoing && !isForegroundService) {
-
-                isForegroundService = true
+                ContextCompat.startForegroundService(
+                    applicationContext,
+                    Intent(applicationContext, this@PodcastService.javaClass)
+                )
             }
 
-            ContextCompat.startForegroundService(
-                applicationContext,
-                Intent(applicationContext, this@PodcastService.javaClass)
-            )
-
             startForeground(notificationId, notification)
+            isForegroundService = true
         }
 
         override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {

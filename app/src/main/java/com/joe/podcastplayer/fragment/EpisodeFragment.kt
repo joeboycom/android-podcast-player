@@ -34,7 +34,7 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
         }
     }
 
-    private val episodeViewModel: EpisodeViewModel by viewModels() {
+    private val episodeViewModel: EpisodeViewModel by viewModels {
         InjectorUtils.provideFeedItemListViewModel(requireContext())
     }
     private val handler = Handler()

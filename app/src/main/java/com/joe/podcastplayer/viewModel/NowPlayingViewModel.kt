@@ -51,16 +51,16 @@ class NowPlayingViewModel(
     }
 
     private var playbackState: PlaybackStateCompat = EMPTY_PLAYBACK_STATE
-    val mediaMetadata = MutableLiveData<NowPlayingMetadata>()
-    val mediaPosition = MutableLiveData<Long>().apply {
+    val mediaMetadataMutableLiveData = MutableLiveData<NowPlayingMetadata>()
+    val mediaPositionMutableLiveData = MutableLiveData<Long>().apply {
         postValue(0L)
     }
 
-    val mediaPlayProgress = MutableLiveData<Int>().apply {
+    val mediaPlayProgressMutableLiveData = MutableLiveData<Int>().apply {
         postValue(0)
     }
 
-    val mediaButtonRes = MutableLiveData<IntArray>()
+    val mediaButtonResMutableLiveData = MutableLiveData<IntArray>()
 
     private var updatePosition = true
     private var mediaDuration = 0L
@@ -113,11 +113,11 @@ class NowPlayingViewModel(
      */
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.currentPlayBackPosition
-        if (mediaPosition.value != currPosition) {
-            mediaPosition.postValue(currPosition)
+        if (mediaPositionMutableLiveData.value != currPosition) {
+            mediaPositionMutableLiveData.postValue(currPosition)
             if (mediaDuration > 0) {
                 val progress = ((currPosition * 100 / mediaDuration)).toInt()
-                mediaPlayProgress.postValue(progress)
+                mediaPlayProgressMutableLiveData.postValue(progress)
             }
         }
 
@@ -140,10 +140,10 @@ class NowPlayingViewModel(
                 mediaMetadata.displaySubtitle?.trim(),
                 NowPlayingMetadata.timestampToMSS(context, mediaMetadata.duration)
             )
-            this.mediaMetadata.postValue(nowPlayingMetadata)
+            this.mediaMetadataMutableLiveData.postValue(nowPlayingMetadata)
         }
 
-        mediaButtonRes.postValue(
+        mediaButtonResMutableLiveData.postValue(
             when (playbackState.isPlaying) {
                 true -> intArrayOf(-R.attr.state_play, R.attr.state_pause) //Set pause
                 else -> intArrayOf(R.attr.state_play, -R.attr.state_pause) //Set play

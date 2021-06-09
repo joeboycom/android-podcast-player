@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.viewModel
+package com.joe.podcastplayer.view
 
 import android.view.ViewGroup
 import com.joe.podcastplayer.R
