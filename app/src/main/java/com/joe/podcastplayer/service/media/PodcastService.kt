@@ -17,7 +17,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
-import com.joe.podcastplayer.service.di.InjectorUtils
+import com.joe.podcastplayer.utility.InjectorUtils
 import com.joe.podcastplayer.extension.id
 import com.joe.podcastplayer.extension.toMediaSource
 import com.google.android.exoplayer2.*

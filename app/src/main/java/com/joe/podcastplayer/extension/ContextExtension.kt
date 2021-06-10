@@ -44,7 +44,7 @@ val Context.versionCode: Long
     get() {
         return try {
             val info = packageManager.getPackageInfo(packageName, 0)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (isPOrHigher) {
                 info.longVersionCode
             } else {
                 info.versionCode.toLong()

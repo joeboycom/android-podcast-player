@@ -92,7 +92,7 @@ val Char.isVocabularyElement: Boolean
 
 fun String.fromHtml(): Spannable {
     return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N -> Html.fromHtml(this, Html.FROM_HTML_MODE_LEGACY) as Spannable
+        isNOrHigher -> Html.fromHtml(this, Html.FROM_HTML_MODE_LEGACY) as Spannable
         else -> Html.fromHtml(this) as Spannable
     }
 }

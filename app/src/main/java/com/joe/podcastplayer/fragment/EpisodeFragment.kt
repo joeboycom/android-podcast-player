@@ -3,6 +3,7 @@ package com.joe.podcastplayer.fragment
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.support.v4.media.MediaMetadataCompat
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -11,11 +12,8 @@ import com.joe.podcastplayer.constant.TransitionEffect
 import com.joe.podcastplayer.activity.MainActivity
 import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.EpisodeFragmentBinding
-import com.joe.podcastplayer.extension.className
-import com.joe.podcastplayer.extension.gson
-import com.joe.podcastplayer.extension.onClick
-import com.joe.podcastplayer.extension.toJson
-import com.joe.podcastplayer.service.di.InjectorUtils
+import com.joe.podcastplayer.extension.*
+import com.joe.podcastplayer.utility.InjectorUtils
 import com.joe.podcastplayer.viewModel.EpisodeViewModel
 import com.prof.rssparser.FeedItem
 
@@ -39,6 +37,7 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     }
     private val handler = Handler()
     private var channelTitle = ""
+    private var currentMetadata: MediaMetadataCompat? = null
     private var feedItem: FeedItem? = null
     private var feedItemList: ArrayList<FeedItem>? = null
 
@@ -57,6 +56,7 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
         channelTitle = bundle!!.getString(BUNDLE_CHANNEL_TITLE, "")
         feedItem = gson.fromJson(bundle.getString(BUNDLE_FEED_ITEM, ""), FeedItem::class.java)
         feedItemList = gson.fromJson(bundle.getString(BUNDLE_FEED_ITEM_LISE), object : TypeToken<ArrayList<FeedItem>>() {}.type)
+        currentMetadata = feedItem?.toMediaMetadataCompat()
         Log.e(className, "feedItem:$feedItem")
     }
 
@@ -75,11 +75,11 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
 
     override fun initAction() {
         viewBinding.playAppCompatButton.onClick {
-            if (feedItem == null) return@onClick
+            if (currentMetadata == null) return@onClick
             val fragment = NowPlayingFragment.newInstance(channelTitle, feedItem!!.toJson())
             (activity as MainActivity?)!!.showFragment(fragment, TransitionEffect.SLIDE)
 
-            playPodcast(feedItem!!)
+            playPodcast()
         }
 
         viewBinding.ivBack.onClick {
@@ -90,9 +90,10 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     override fun initObserver() {
     }
 
-    private fun playPodcast(feedItem: FeedItem) {
+    private fun playPodcast() {
+        if (feedItem == null) return
         handler.postDelayed({
-            episodeViewModel.playMedia(feedItem)
+            episodeViewModel.playMedia(feedItem!!.toNowPlayingMetadata())
         }, 1000)
     }
 }

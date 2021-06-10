@@ -1,4 +1,4 @@
-package com.joe.podcastplayer.service.di
+package com.joe.podcastplayer.utility
 
 import android.content.ComponentName
 import android.content.Context
@@ -16,10 +16,7 @@ import com.prof.rssparser.FeedItem
 object InjectorUtils {
 
     private fun provideMediaServiceConnection(context: Context): PodcastServiceConnection {
-        return PodcastServiceConnection.getInstance(
-            context,
-            ComponentName(context, PodcastService::class.java)
-        )
+        return PodcastServiceConnection.getInstance(context, ComponentName(context, PodcastService::class.java))
     }
 
     fun provideFeedItemListRepository(context: Context): ArrayList<FeedItem> {
@@ -34,10 +31,7 @@ object InjectorUtils {
 
     fun provideNowPlayingViewModel(context: Context): NowPlayingViewModel.Factory {
         val musicServiceConnection = provideMediaServiceConnection(context)
-        return NowPlayingViewModel.Factory(
-            context,
-            musicServiceConnection
-        )
+        return NowPlayingViewModel.Factory(context, musicServiceConnection)
     }
 
 }

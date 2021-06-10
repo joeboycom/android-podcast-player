@@ -37,7 +37,7 @@ val isNetworkAvailable: Boolean
     get() {
         val application = PodcastPlayerApplication.application
         val connectivityManager = application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (isMOrHigher) {
             val activeNetwork = connectivityManager.activeNetwork ?: return false
             val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
             return when {

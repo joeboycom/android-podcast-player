@@ -19,14 +19,16 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.joe.podcastplayer.R
 import com.joe.podcastplayer.base.BaseFragment
+import com.joe.podcastplayer.data.NowPlayingMetadata
+import com.joe.podcastplayer.data.NowPlayingMetadata.Companion.timestampToMSS
 import com.joe.podcastplayer.databinding.NowPlayingFragmentBinding
 import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.extension.gson
+import com.joe.podcastplayer.extension.isNOrHigher
 import com.joe.podcastplayer.extension.onClick
-import com.joe.podcastplayer.service.di.InjectorUtils
+import com.joe.podcastplayer.utility.InjectorUtils
 import com.joe.podcastplayer.viewModel.EpisodeViewModel
 import com.joe.podcastplayer.viewModel.NowPlayingViewModel
-import com.joe.podcastplayer.viewModel.NowPlayingViewModel.NowPlayingMetadata.Companion.timestampToMSS
 import com.prof.rssparser.FeedItem
 
 
@@ -93,12 +95,11 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         })
 
         viewBinding.smallPlayer.playPauseImage.setOnClickListener {
-            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(feedItem) }
+            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(it) }
         }
 
         viewBinding.largePlayer.largePlayPauseButton.setOnClickListener {
-            episodeViewModel.playMedia(feedItem!!)
-            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(feedItem) }
+            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(it) }
         }
 
         viewBinding.largePlayer.largePreviousButton.setOnClickListener {
@@ -170,7 +171,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         })
     }
 
-    private fun updateUI(view: View?, metadata: NowPlayingViewModel.NowPlayingMetadata) {
+    private fun updateUI(view: View?, metadata: NowPlayingMetadata) {
         if (view == null) return
         if (metadata.albumArtUri == Uri.EMPTY) {
             viewBinding.smallPlayer.smallCover.setImageResource(R.drawable.ic_default_cover_icon)
@@ -220,7 +221,7 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
 
     private fun updateProgressBar(progress: Int) {
         if (seekbarScrollingStart) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (isNOrHigher) {
             viewBinding.smallPlayer.smallSeekBar.setProgress(progress, true)
             viewBinding.largePlayer.largeSeekBar.setProgress(progress, true)
         } else {
@@ -234,8 +235,6 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     }
 
     private fun setTitleColor(palette: Palette) {
-        val bodyColor: Int = palette.getDominantColor(
-            ContextCompat.getColor(requireContext(), android.R.color.black)
-        )
+        palette.getDominantColor(ContextCompat.getColor(requireContext(), android.R.color.black))
     }
 }
