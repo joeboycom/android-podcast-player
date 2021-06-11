@@ -107,6 +107,7 @@ class HomeFragment : BaseFragment<HomeFragmentBinding>() {
         title = channel.title
 
         feedItems = channel.articles
+        feedItems.forEach { it.author = title }
         adapter.feedItemList = channel.articles
         adapter.notifyDataSetChanged()
         viewBinding.tvChannelTitle.text = title
