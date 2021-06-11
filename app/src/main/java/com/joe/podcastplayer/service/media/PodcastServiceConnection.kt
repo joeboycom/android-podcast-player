@@ -8,6 +8,7 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.media.MediaBrowserServiceCompat
 import com.joe.podcastplayer.extension.className
 import com.joe.podcastplayer.extension.*
 
@@ -100,6 +101,16 @@ class PodcastServiceConnection(val context: Context, serviceComponent: Component
             super.onRepeatModeChanged(repeatMode)
             Log.d(className, "MediaControllerCallback onRepeatModeChanged:$repeatMode")
             repeatModeState.postValue(repeatMode)
+        }
+
+        /**
+         * Normally if a [MediaBrowserServiceCompat] drops its connection the callback comes via
+         * [MediaControllerCompat.Callback] (here). But since other connection status events
+         * are sent to [MediaBrowserCompat.ConnectionCallback], we catch the disconnect here and
+         * send it on to the other callback.
+         */
+        override fun onSessionDestroyed() {
+            mediaBrowserConnectionCallback.onConnectionSuspended()
         }
     }
 

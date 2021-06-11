@@ -111,6 +111,7 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
     }
 
     override fun onTaskRemoved(rootIntent: Intent) {
+        Log.e(TAG, "onTaskRemoved")
         //Save recent play info
         super.onTaskRemoved(rootIntent)
 
@@ -122,14 +123,16 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
          * The service will then remove itself as a foreground service, and will call
          * [stopSelf].
          */
-        currentPlayer.stop()
+        currentPlayer.stop(true)
     }
 
     override fun onLoadChildren(parentId: String, result: Result<MutableList<MediaBrowserCompat.MediaItem>>) {
+        Log.e(TAG, "onLoadChildren")
         //Do nothing
     }
 
     override fun onDestroy() {
+        Log.e(TAG, "onDestroy")
         mediaSessionCompat.run {
             isActive = false
             release()
@@ -176,8 +179,7 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
                     PlaybackStateCompat.ACTION_PREPARE_FROM_SEARCH or
                     PlaybackStateCompat.ACTION_PLAY_FROM_URI
 
-        override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) {
-        }
+        override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) = Unit
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
             launch {
@@ -312,6 +314,7 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
         }
 
         override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
+            Log.e(TAG, "onNotificationCancelled")
             stopForeground(true)
             isForegroundService = false
             stopSelf()

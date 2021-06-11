@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.service.media.PodcastService
 import com.joe.podcastplayer.service.media.PodcastServiceConnection
-import com.joe.podcastplayer.viewModel.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.MainActivityViewModel
 import com.joe.podcastplayer.viewModel.NowPlayingViewModel
 import com.prof.rssparser.FeedItem
 
@@ -24,13 +24,15 @@ object InjectorUtils {
         return gson.fromJson(pref.getString("pref_feed_item_list", ""), object : TypeToken<ArrayList<FeedItem>>() {}.type)
     }
 
-    fun provideFeedItemListViewModel(context: Context): EpisodeViewModel.Factory {
-        val musicServiceConnection = provideMediaServiceConnection(context)
-        return EpisodeViewModel.Factory(musicServiceConnection)
+    fun provideMainActivityViewModel(context: Context): MainActivityViewModel.Factory {
+        val applicationContext = context.applicationContext
+        val musicServiceConnection = provideMediaServiceConnection(applicationContext)
+        return MainActivityViewModel.Factory(musicServiceConnection)
     }
 
     fun provideNowPlayingViewModel(context: Context): NowPlayingViewModel.Factory {
-        val musicServiceConnection = provideMediaServiceConnection(context)
+        val applicationContext = context.applicationContext
+        val musicServiceConnection = provideMediaServiceConnection(applicationContext)
         return NowPlayingViewModel.Factory(context, musicServiceConnection)
     }
 

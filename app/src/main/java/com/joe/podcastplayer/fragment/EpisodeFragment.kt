@@ -14,7 +14,7 @@ import com.joe.podcastplayer.base.BaseFragment
 import com.joe.podcastplayer.databinding.EpisodeFragmentBinding
 import com.joe.podcastplayer.extension.*
 import com.joe.podcastplayer.utility.InjectorUtils
-import com.joe.podcastplayer.viewModel.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.MainActivityViewModel
 import com.prof.rssparser.FeedItem
 
 class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
@@ -32,8 +32,8 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
         }
     }
 
-    private val episodeViewModel: EpisodeViewModel by viewModels {
-        InjectorUtils.provideFeedItemListViewModel(requireContext())
+    private val viewModel: MainActivityViewModel by viewModels {
+        InjectorUtils.provideMainActivityViewModel(requireContext())
     }
     private val handler = Handler()
     private var channelTitle = ""
@@ -93,7 +93,7 @@ class EpisodeFragment : BaseFragment<EpisodeFragmentBinding>() {
     private fun playPodcast() {
         if (feedItem == null) return
         handler.postDelayed({
-            episodeViewModel.playMedia(feedItem!!.toNowPlayingMetadata())
+            viewModel.playMedia(feedItem!!.toNowPlayingMetadata())
         }, 1000)
     }
 }

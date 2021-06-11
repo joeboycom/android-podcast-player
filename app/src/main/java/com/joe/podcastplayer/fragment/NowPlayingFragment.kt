@@ -3,7 +3,6 @@ package com.joe.podcastplayer.fragment
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -27,7 +26,7 @@ import com.joe.podcastplayer.extension.gson
 import com.joe.podcastplayer.extension.isNOrHigher
 import com.joe.podcastplayer.extension.onClick
 import com.joe.podcastplayer.utility.InjectorUtils
-import com.joe.podcastplayer.viewModel.EpisodeViewModel
+import com.joe.podcastplayer.viewModel.MainActivityViewModel
 import com.joe.podcastplayer.viewModel.NowPlayingViewModel
 import com.prof.rssparser.FeedItem
 
@@ -49,8 +48,8 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
     private var channelTitle = ""
     private var feedItem: FeedItem? = null
 
-    private val episodeViewModel: EpisodeViewModel by viewModels {
-        InjectorUtils.provideFeedItemListViewModel(requireContext())
+    private val mainActivityViewModel: MainActivityViewModel by viewModels {
+        InjectorUtils.provideMainActivityViewModel(requireContext())
     }
 
     private val nowPlayingViewModel: NowPlayingViewModel by viewModels {
@@ -95,11 +94,11 @@ class NowPlayingFragment : BaseFragment<NowPlayingFragmentBinding>() {
         })
 
         viewBinding.smallPlayer.playPauseImage.setOnClickListener {
-            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(it) }
+            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { mainActivityViewModel.playMedia(it) }
         }
 
         viewBinding.largePlayer.largePlayPauseButton.setOnClickListener {
-            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { episodeViewModel.playMedia(it) }
+            nowPlayingViewModel.mediaMetadataMutableLiveData.value?.let { mainActivityViewModel.playMedia(it) }
         }
 
         viewBinding.largePlayer.largePreviousButton.setOnClickListener {

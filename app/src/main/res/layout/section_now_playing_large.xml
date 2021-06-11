@@ -144,7 +144,7 @@
         android:layout_marginStart="6dp"
         android:layout_marginTop="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@drawable/exo_ic_rewind"
+        android:src="@drawable/ic_baseline_fast_rewind_24"
         app:layout_constraintEnd_toStartOf="@id/largePreviousButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/nowDuration"
