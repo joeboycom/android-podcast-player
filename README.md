@@ -1,5 +1,7 @@
 # android-podcast-player
  
+ ![alt text](https://imgur.com/a/dxlMewS)
+ 
 - Kotlin
 - MVVM
 - ExoPlayer
