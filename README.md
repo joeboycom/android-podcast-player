@@ -1,8 +1,7 @@
 # android-podcast-player
  
- ![alt text](https://imgur.com/R26gFhl) ![alt text](https://imgur.com/DSwRAtM) ![alt text](https://imgur.com/8VmBcGb)
- 
- 
+ ![Episode list](https://github.com/joeboycom/android-podcast-player/blob/master/podcast-player-list.png) ![A episode](https://github.com/joeboycom/android-podcast-player/blob/master/podcast-player-episode.png) ![Player](https://github.com/joeboycom/android-podcast-player/blob/master/podcast-player-player.png)
+
 - Kotlin
 - MVVM
 - ExoPlayer
