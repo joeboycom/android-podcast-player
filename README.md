@@ -1,6 +1,7 @@
 # android-podcast-player
  
- ![alt text](https://imgur.com/a/dxlMewS)
+ ![alt text](https://imgur.com/R26gFhl) ![alt text](https://imgur.com/DSwRAtM) ![alt text](https://imgur.com/8VmBcGb)
+ 
  
 - Kotlin
 - MVVM
