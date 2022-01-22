@@ -1,6 +1,6 @@
 # android-podcast-player
  
- ![Episode list](https://github.com/joeboycom/android-podcast-player/blob/master/podcast-player-list.png) ![A episode](https://github.com/joeboycom/android-podcast-player/blob/master/podcast-player-episode.png) ![Player](https://github.com/joeboycom/android-podcast-player/blob/master/podcast-player-player.png)
+ ![Episode list](https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-list.png?raw=true) ![A episode](https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-episode.png?raw=true) ![Player](https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-player.png?raw=true)
 
 - Kotlin
 - MVVM
