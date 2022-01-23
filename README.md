@@ -1,8 +1,13 @@
 # android-podcast-player
- 
-<img src="https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-list.png" alt="Episode list" width="150"/>
-<img src="https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-episode.png" alt="A episode" width="150"/>
-<img src="https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-player.png" alt="Player" width="150"/>
+
+
+This will display the three images side by side if the images are not too wide.
+
+<p float="middle">
+    <img src="https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-list.png" alt="Episode list" width="32%"/>
+    <img src="https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-episode.png" alt="A episode" width="32%"/>
+    <img src="https://github.com/joeboycom/android-podcast-player/blob/master/docs/podcast-player-player.png" alt="Player" width="32%"/>
+</p>
 
 - Kotlin
 - MVVM
