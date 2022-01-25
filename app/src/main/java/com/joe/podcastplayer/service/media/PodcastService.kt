@@ -74,6 +74,11 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
         DefaultDataSourceFactory(this, Util.getUserAgent(this, MEDIA_USER_AGENT), null)
     }
 
+    private fun getFeedItemList() {
+        feedItemList = InjectorUtils.provideFeedItemListRepository(this)
+        feedItemList.reverse() // control the order
+    }
+
     override fun onCreate() {
         super.onCreate()
         Log.e(TAG, "onCreate")
@@ -88,8 +93,6 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
 
         sessionToken = mediaSessionCompat.sessionToken
 
-        feedItemList = InjectorUtils.provideFeedItemListRepository(this)
-        feedItemList.reverse() // control the order
         mediaSessionConnector = MediaSessionConnector(mediaSessionCompat)
         mediaSessionConnector.setPlaybackPreparer(PodcastPlaybackPreparer())
         mediaSessionConnector.setQueueNavigator(PodcastQueueNavigator(mediaSessionCompat))
@@ -182,6 +185,10 @@ class PodcastService : MediaBrowserServiceCompat(), CoroutineScope by MainScope(
         override fun onPrepareFromMediaId(mediaId: String, playWhenReady: Boolean, extras: Bundle?) = Unit
 
         override fun onPrepareFromUri(uri: Uri, playWhenReady: Boolean, extras: Bundle?) {
+            Log.e(TAG, "onPrepareFromUri $uri $playWhenReady")
+            getFeedItemList()
+            if (feedItemList.isNullOrEmpty()) return
+
             launch {
                 val itemToPlay = feedItemList.find { item ->
                     item.audio.toString() == uri.toString()
